@@ -1,0 +1,26 @@
+@using Microsoft.Extensions.Options
+@using Web.Facebook
+
+@inject ILogger<About> logger
+@inject FacebookApiClient facebookApiClient
+@inject IOptions<FacebookOptions> options
+
+<div class="[grid-area:image]">
+    <img class="h-full" alt="logo image" referrerpolicy="origin-when-cross-origin" src="@(Group?.Cover.Source ?? options.Value.DefaultLogoUrl)">
+</div>    
+
+@code {
+    private FacebookGroup? Group {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Group = await facebookApiClient.GetGroup();
+        }
+        catch (HttpRequestException e)
+        {
+            logger.LogError(e, "{exceptionMessage} getting group details for {groupId}", e.Message, options.Value.GroupId);
+        }
+    }
+}

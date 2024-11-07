@@ -12,7 +12,7 @@ public interface IFacebookService
 class FacebookErrorResponse
 {
     public required string Message { get; set; }
-    public required int Code {get; set;}
+    public required int Code { get; set; }
 }
 
 class FacebookResponse
@@ -25,6 +25,7 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<Face
 {
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient("Facebook");
     private readonly FacebookOptions _options = options.Value;
+    private static readonly SemaphoreSlim GroupLock = new(1, 1);
 
     private readonly MemoryCacheEntryOptions _cacheOptions = new()
     {
@@ -33,27 +34,35 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<Face
 
     async Task<FacebookGroup?> IFacebookService.GetGroupAsync(string groupId)
     {
-        var url = $"{groupId}?fields=description,cover";
-
+        await GroupLock.WaitAsync();
         try
         {
-            var cacheKey = $"Group-{groupId}";
-            var group = cache.Get<FacebookGroup>(cacheKey) ?? await _httpClient.GetFromJsonAsync<FacebookGroup>(url);
+            var url = $"{groupId}?fields=description,cover";
 
-            if (group is not null)
+            try
             {
-                cache.Set(cacheKey, group, _cacheOptions);
-            }
+                var cacheKey = $"Group-{groupId}";
+                var group = cache.Get<FacebookGroup>(cacheKey) ?? await _httpClient.GetFromJsonAsync<FacebookGroup>(url);
 
-            return group;
+                if (group is not null)
+                {
+                    cache.Set(cacheKey, group, _cacheOptions);
+                }
+
+                return group;
+            }
+            catch (HttpRequestException hre) when (hre.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var response = await _httpClient.GetAsync(url);
+                var error = await response.Content.ReadFromJsonAsync<FacebookResponse>();
+                if (error!.Error.Code == 100) return null;
+
+                throw;
+            }
         }
-        catch (HttpRequestException hre) when (hre.StatusCode == HttpStatusCode.BadRequest)
+        finally
         {
-            var response = await _httpClient.GetAsync(url);
-            var error = await response.Content.ReadFromJsonAsync<FacebookResponse>();
-            if (error!.Error.Code == 100) return null;
-            
-            throw;
+            GroupLock.Release();
         }
     }
 }
