@@ -1,6 +1,9 @@
 @using Microsoft.Extensions.Options
+@using Web.Facebook
 
 @inject ILogger<About> logger
+@inject FacebookApiClient facebookApiClient
+@inject IOptions<FacebookOptions> options
 
 <div class="p-2 text-center [grid-area:about] flex flex-col items-center">
     <a class="p-2 bg-white" href="/"><img class="w-96" src="/bodyline-sports-logo.jpg" alt="logo"></a>
@@ -8,17 +11,22 @@
 </div>
 
 @code {
-    @* private Group? Group {get; set;} *@
+    private FacebookGroup? Group {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            @* Group = await facebookService.GetGroup(options.Value.GroupId); *@
+            Group = await facebookApiClient.GetGroup();
         }
         catch (HttpRequestException e)
         {
-            @* logger.LogError(e, "{exceptionMessage} getting group details for {groupId}", e.Message, options.Value.GroupId); *@
+            logger.LogError(e, "{exceptionMessage} getting group details for {groupId}", e.Message, options.Value.GroupId);
         }
     }
 }    
+    using Web.Facebook;
+
+#line default
+#line hidden
+#nullable disable
