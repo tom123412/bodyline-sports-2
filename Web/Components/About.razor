@@ -1,0 +1,24 @@
+@using Microsoft.Extensions.Options
+
+@inject ILogger<About> logger
+
+<div class="p-2 text-center [grid-area:about] flex flex-col items-center">
+    <a class="p-2 bg-white" href="/"><img class="w-96" src="/bodyline-sports-logo.jpg" alt="logo"></a>
+    @* <p class="pt-2">@(Group?.Description ?? options.Value.DefaultAboutMessage)</p> *@
+</div>
+
+@code {
+    @* private Group? Group {get; set;} *@
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            @* Group = await facebookService.GetGroup(options.Value.GroupId); *@
+        }
+        catch (HttpRequestException e)
+        {
+            @* logger.LogError(e, "{exceptionMessage} getting group details for {groupId}", e.Message, options.Value.GroupId); *@
+        }
+    }
+}    

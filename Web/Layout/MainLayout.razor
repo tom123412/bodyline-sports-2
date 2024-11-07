@@ -1,10 +1,12 @@
-﻿@inherits LayoutComponentBase
+﻿@using Web.Components
+@inherits LayoutComponentBase
 
 <div class="p-2">
-    <header class="grid gap-x-4 border-b-2 border-black [border-color:canvastext] [grid-template-areas:'about''logo''contact'] lg:[grid-template-areas:'about_about''logo_contact'] lg:grid-cols-[1fr_auto] shadow-lg">
-        @* <About />
-        <Logo />
-        <Contact />         *@
+    <header
+        class="grid gap-x-4 border-b-2 border-black [border-color:canvastext] [grid-template-areas:'about''logo''contact'] lg:[grid-template-areas:'about_about''logo_contact'] lg:grid-cols-[1fr_auto] shadow-lg">
+        <About />
+        @*<Logo />
+        <Contact /> *@
     </header>
     <main class="pt-4">
         @Body
@@ -12,20 +14,4 @@
     <footer class="border-t-2 border-black p-1">
         <p>&copy; @DateTime.Now.Year </p>
     </footer>
-</div>
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
 </div>
