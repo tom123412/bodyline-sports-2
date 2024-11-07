@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/ab682eb5-2f8a-499e-b061-e69f6ea0cf69/resourceGroups/bodylinesports2/providers/Microsoft.Web/sites/bodylinesports-api",
+    "appService.deploySubpath": "Api\\bin\\Publish"
+}
