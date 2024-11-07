@@ -1,0 +1,67 @@
+@using Microsoft.Extensions.Options
+@using Web.ContactDetails
+
+@inject IOptionsSnapshot<ContactOptions> options
+
+<div class="p-2 flex lg:flex-col gap-1 justify-center flex-wrap [grid-area:contact]">
+    <p class="flex gap-x-2 w-full lg:w-fit justify-center items-center">
+        <span class="material-symbols-sharp">mail</span>
+        <a href="@_model!.EmailLink" target="_blank">@_model!.Email</a>
+    </p>
+    <p class="flex gap-x-2 items-center">
+        <span class="material-symbols-sharp">call</span>
+        <a href="@_model!.LandLineLink" target="_blank">@_model!.LandLine</a>
+    </p>
+    <p class="flex gap-x-2 items-center">
+        <span class="material-symbols-sharp">smartphone</span>
+        <a href="@_model!.MobileLink" target="_blank">@_model!.Mobile</a>
+    </p>
+    <p class="flex gap-x-2 items-center">
+        <span class="material-symbols-sharp">home</span>
+        <a href="@_model!.AddressLink" target="_blank">@_model!.Address</a>
+    </p>
+    <p class="flex gap-x-2 items-center">
+        <svg class="fill-facebook" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24"
+            viewBox="0 0 24 24" width="24">
+            <rect fill="none" height="24" width="24" />
+            <path
+                d="M22,12c0-5.52-4.48-10-10-10S2,6.48,2,12c0,4.84,3.44,8.87,8,9.8V15H8v-3h2V9.5C10,7.57,11.57,6,13.5,6H16v3h-2 c-0.55,0-1,0.45-1,1v2h3v3h-3v6.95C18.05,21.45,22,17.19,22,12z" />
+        </svg>
+        <a href="@_model!.FacebookPageLink" target="_blank">@_model!.FacebookPageName</a>
+    </p>
+</div>
+
+@code {
+    private sealed class Details
+    {
+        public required string Email { get; set; }
+        public required Uri EmailLink { get; set; }
+        public required string LandLine { get; set; }
+        public required Uri LandLineLink { get; set; }
+        public required string Mobile { get; set; }
+        public required Uri MobileLink { get; set; }
+        public required string Address { get; set; }
+        public required Uri AddressLink { get; set; }
+        public required string FacebookPageName { get; set; }
+        public required Uri FacebookPageLink { get; set; }
+    }
+
+    private Details? _model;
+
+    protected override void OnInitialized()
+    {
+        _model = new()
+            {
+                Email = options.Value.Email,
+                EmailLink = options.Value.EmailLink,
+                LandLine = options.Value.LandLine,
+                LandLineLink = options.Value.LandLineLink,
+                Address = options.Value.Address,
+                AddressLink = options.Value.AddressLink,
+                Mobile = options.Value.Mobile,
+                MobileLink = options.Value.MobileLink,
+                FacebookPageName = options.Value.FacebookPageName,
+                FacebookPageLink = options.Value.FacebookPageLink,
+            };
+    }
+}
