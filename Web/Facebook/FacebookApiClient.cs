@@ -30,7 +30,7 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
 
     public async Task<FacebookGroup?> GetGroup(CancellationToken cancellationToken = default)
     {
-        var group = await httpClient.GetFromJsonAsync<FacebookGroup>($"/groups/{_options.GroupId}", cancellationToken: cancellationToken);
+        var group = await httpClient.GetFromJsonAsync<FacebookGroup>($"/facebook/groups/{_options.GroupId}", cancellationToken: cancellationToken);
         return group;
     }
 }

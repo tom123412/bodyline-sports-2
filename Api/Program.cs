@@ -14,6 +14,8 @@ builder.Services.AddMemoryCache();
 
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
 
+builder.Services.AddCors();
+
 builder.Services
     .AddHttpClient("Facebook", (httpClient) =>
     {
@@ -36,6 +38,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(builder => 
+    builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+);
 
 var summaries = new[]
 {

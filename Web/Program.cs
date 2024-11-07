@@ -14,9 +14,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddHttpClient<FacebookApiClient>(client =>
 {
-    // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
-    // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
-    client.BaseAddress = new("https+http://apiservice");
+    client.BaseAddress = new(builder.Configuration.GetValue<string>("ApiUrl") ?? "https://localhost:1234/");
 });
 
 await builder.Build().RunAsync();
