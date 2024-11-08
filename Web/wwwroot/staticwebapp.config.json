@@ -1,0 +1,9 @@
+{
+    "navigationFallback": {
+        "rewrite": "/index.html"
+    },
+    "globalHeaders": {
+        "blazor-environment": "Staging",
+        "content-security-policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'"
+    }
+}
