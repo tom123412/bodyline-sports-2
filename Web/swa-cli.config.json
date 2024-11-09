@@ -6,7 +6,7 @@
       "outputLocation": "bin\\wwwroot",
       "appBuildCommand": "dotnet publish -c Release -o bin",
       "run": "dotnet watch run",
-      "appDevserverUrl": "http://localhost:8000",
+      "appDevServerUrl": "http://localhost:8000",
       "appName": "bodylinesports",
       "resourceGroup": "bodylinesports2"
     }
