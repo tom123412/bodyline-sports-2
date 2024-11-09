@@ -77,6 +77,15 @@ app.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroup>, NotFou
 .WithName("GetFacebookGroupDetails")
 .WithOpenApi();
 
+
+app.MapGet("/facebook/groups/{id}/posts", async (string id, [FromQuery]int? limit, [FromServices]IFacebookService service) =>
+{
+    var posts = await service.GetPostsForGroupAsync(id, limit);
+    return TypedResults.Ok(posts);
+})
+.WithName("GetFacebookGroupPosts")
+.WithOpenApi();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
