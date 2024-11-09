@@ -1,0 +1,42 @@
+@using Microsoft.Extensions.Options
+@using Web.Facebook
+
+@inject IOptions<FacebookOptions> options
+@inject ILogger<FacebookPosts> logger
+@inject FacebookApiClient facebookApiClient    
+
+@foreach (var post in Posts)
+{
+    <article class="p-2 [background:canvas] rounded-xl shadow-md basis-4/5 shadow-black h-min [overflow-wrap:anywhere]">
+        <p class="text-xs">@post.UpdatedDateTime.LocalDateTime.ToString(@"dd MMMM \a\t HH:mm")</p>
+        <p class="pt-1">@((MarkupString?)(post.Message?.Replace("\n", "<br />") ?? string.Empty))</p>
+        @if (post.Attachments is not null)
+        {
+            @if (post.Attachments.Data[0].SubAttachments is not null)
+            {
+                <FacebookPostsMultipleImages SubAttachmentsDatas="post.Attachments.Data[0].SubAttachments!.Data" />
+            }
+            else
+            {
+                <FacebookPostsImage AttachmentsData="post.Attachments.Data[0]" />
+            }
+        }
+    </article>
+}
+
+@code {
+    private IEnumerable<FacebookPost> Posts { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Posts = await facebookApiClient.GetPostsForGroup();
+        }
+        catch (HttpRequestException e)
+        {
+            logger.LogError(e, "{exceptionMessage} getting posts for group {groupId}", e.Message, options.Value.GroupId);
+        }
+
+    }
+}

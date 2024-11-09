@@ -25,6 +25,7 @@ class FacebookDateTimeConverter : JsonConverter<DateTimeOffset>
 
     public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        var json = JsonSerializer.Serialize(value, options);
+        writer.WriteStringValue(json.Replace("\"", ""));
     }
 }
