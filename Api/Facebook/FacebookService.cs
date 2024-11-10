@@ -1,4 +1,5 @@
 using System.Net;
+using Api.Facebook.Model;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
@@ -8,6 +9,7 @@ public interface IFacebookService
 {
     public Task<FacebookGroup?> GetGroupAsync(string groupId);
     public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId, int? limit);
+    public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken);
 }
 
 public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<FacebookOptions> options, IMemoryCache cache)
@@ -96,5 +98,12 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<Face
         {
             PostsLock.Release();
         }
+    }
+
+    async Task<FacebookTokenDetails> IFacebookService.GetLongLivedTokenDetailsAsync(string userAccessToken)
+    {
+        var url = $"/debug_token?input_token={_options.AccessToken}&access_token={userAccessToken}";
+        var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookTokenDetails>(url);
+        return tokenDetails!;
     }
 }

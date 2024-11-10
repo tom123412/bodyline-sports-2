@@ -1,3 +1,3 @@
-namespace Api.Facebook;
+namespace Api.Facebook.Model;
 
 public record FacebookPhoto(Uri Source);

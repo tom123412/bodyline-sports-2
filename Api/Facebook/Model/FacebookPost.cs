@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Api.Facebook;
+namespace Api.Facebook.Model;
 
 public class FacebookPost
 {

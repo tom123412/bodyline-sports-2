@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;

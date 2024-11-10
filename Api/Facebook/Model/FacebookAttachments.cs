@@ -1,4 +1,4 @@
-namespace Api.Facebook;
+namespace Api.Facebook.Model;
 
 public class FacebookAttachments
 {

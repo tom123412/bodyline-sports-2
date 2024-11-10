@@ -1,0 +1,58 @@
+﻿@page "/admin/refresh-token"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Options
+@using Web.Facebook
+
+@inject IOptions<FacebookOptions> facebookOptions
+@* @inject IFacebook facebook *@
+@inject ILogger<RefreshAccessToken> logger
+
+@* @inject IHttpContextAccessor httpContextAccessor *@
+
+@attribute [Authorize(Policy = "Admin")]
+
+<PageTitle>Bodyline Sports (Admin)</PageTitle>
+
+<AuthorizeView Context="authContext" Policy="Admin">
+  <Authorized>
+    @* <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a> *@
+
+    <h2 class="font-semibold">Access token</h2>
+    <div>
+      <p class="text-sm text-gray-400 p-2.5">Access token will now expire on @(ExpiresAt?.LocalDateTime.ToString() ??
+        "🤷‍♂️")
+      </p>
+    </div>
+  </Authorized>
+  <NotAuthorized>
+    <p>You're not authorized.</p>
+  </NotAuthorized>
+</AuthorizeView>
+
+@code {
+  private DateTimeOffset? ExpiresAt { get; set; }
+  private string? UserAccessToken { get; set; }
+
+  protected async override Task OnInitializedAsync()
+  {
+    const string AccessTokenKey = $"{nameof(FacebookOptions)}:AccessToken";
+
+    @* ExpiresAt = (await facebook.GetTokenDetails(LongLivedAccessToken, UserAccessToken!)).Data.ExpiresAt;
+
+    var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+    await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, LongLivedAccessToken)); *@
+
+    await base.OnInitializedAsync();
+  }
+
+  protected override void OnInitialized()
+  {
+    @* if (httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false)
+    {
+      var authFeatures = httpContextAccessor.HttpContext?.Features.Get<IAuthenticateResultFeature>();
+      UserAccessToken = authFeatures!.AuthenticateResult!.Properties!.GetTokenValue("access_token");
+    } *@
+
+    base.OnInitialized();
+  }
+}

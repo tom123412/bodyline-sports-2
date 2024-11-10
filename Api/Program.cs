@@ -1,4 +1,5 @@
 using Api.Facebook;
+using Api.Facebook.Model;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -49,26 +50,6 @@ app.UseCors(builder =>
         .AllowAnyHeader()
 );
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
 app.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroup>, NotFound>> (string id, [FromServices]IFacebookService service) =>
 {
     var group = await service.GetGroupAsync(id);
@@ -76,7 +57,6 @@ app.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroup>, NotFou
 })
 .WithName("GetFacebookGroupDetails")
 .WithOpenApi();
-
 
 app.MapGet("/facebook/groups/{id}/posts", async (string id, [FromQuery]int? limit, [FromServices]IFacebookService service) =>
 {
@@ -86,11 +66,14 @@ app.MapGet("/facebook/groups/{id}/posts", async (string id, [FromQuery]int? limi
 .WithName("GetFacebookGroupPosts")
 .WithOpenApi();
 
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+app.MapGet("/facebook/longlivedtoken", async ([FromQuery]string userAccessToken, [FromServices]IFacebookService service) =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    var tokenDetails = await service.GetLongLivedTokenDetailsAsync(userAccessToken);
+    return TypedResults.Ok(tokenDetails.ToDto());
+})
+.WithName("GetFacebookLongLivedTokenDetails")
+.WithOpenApi();
+
+app.Run();
 
 
