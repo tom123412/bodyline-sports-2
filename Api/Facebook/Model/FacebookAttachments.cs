@@ -31,6 +31,6 @@ public class SubAttachments
 
 public class SubAttachmentsData
 {
-    public string Description { get; set; } = "Post image";
+    public string Description { get; set; } = "post image";
     public required Media Media { get; set; }
 }

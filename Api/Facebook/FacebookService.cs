@@ -84,9 +84,9 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<Face
         {
             var cacheKey = $"Posts-{groupId}";
             var posts = cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
-            var url = $"/{groupId}/feed?fields=attachments,message,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={limit ?? _options.PostsToLoad}";
+            var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={limit ?? _options.PostsToLoad}";
             var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url);
-            var newPosts = (feed?.Data ?? []).ToList();
+            var newPosts = (feed?.Data ?? []).Where(p => p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Count() == 0).ToList();
 
             newPosts.AddRange(posts.Where(p => p.Type != "Status"));
 

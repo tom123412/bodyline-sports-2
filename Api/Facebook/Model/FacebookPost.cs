@@ -14,6 +14,9 @@ public class FacebookPost
     public required DateTimeOffset UpdatedDateTime { get; set; }
     
     public string? Type { get; set; }
+
+    [JsonPropertyName("message_tags")]
+    public FacebookTag[] Tags { get; set; } = [];
 }
 
 class FacebookDateTimeConverter : JsonConverter<DateTimeOffset>

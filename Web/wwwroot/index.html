@@ -7,9 +7,10 @@
     <meta name="color-scheme" content="dark light">
     <title>Bodyline Sports</title>
     <base href="/" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="css/app.css" />
-    <link  rel="stylesheet"href="Web.styles.css" />
+    <link rel="stylesheet" href="Web.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,11 +18,49 @@
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <header
+            class="grid gap-x-4 border-b-2 border-black [border-color:canvastext] [grid-template-areas:'logo''about''image''contact'] lg:[grid-template-areas:'logo_contact''about_about''image_image'] lg:grid-cols-[1fr_auto] shadow-lg"
+            b-ul2p924usi="">
+            <div class="p-2 items-center [grid-area:logo] bg-black justify-around flex"><a class="" href="/"><img
+                        class="w-48 lg:w-96" src="/bodyline-sports-logo.jpg" alt="logo"></a></div>
+            <div class="p-2 text-center [grid-area:about] flex flex-col items-center">
+                <p class="pt-2">Racquet specialist carrying a large range of brands and associated products, Mizuno
+                    footwear is the preferred brand, we are also stringing specialist of all racquet sports - call for
+                    squash court hire at the Dickson squash center</p>
+            </div>
+            <div class="p-2 flex lg:flex-col gap-1 justify-center flex-wrap [grid-area:contact]">
+                <p class="flex gap-x-2 w-full lg:w-fit justify-center items-center"><span
+                        class="material-symbols-sharp">mail</span>
+                    <a href="mailto:richard@bodylinesports.com.au" target="_blank">richard@bodylinesports.com.au</a>
+                </p>
+                <p class="flex gap-x-2 items-center"><span class="material-symbols-sharp">call</span>
+                    <a href="tel:0262306353" target="_blank">(02) 6230 6353</a>
+                </p>
+                <p class="flex gap-x-2 items-center"><span class="material-symbols-sharp">smartphone</span>
+                    <a href="tel:+61409824487" target="_blank">0409 824 487</a>
+                </p>
+                <p class="flex gap-x-2 items-center"><span class="material-symbols-sharp">home</span>
+                    <a href="https://www.google.com/maps/place/79 Dickson Place, Dickson, Canberra, ACT, 2602"
+                        target="_blank">79 Dickson Place, Dickson, Canberra, ACT, 2602</a>
+                </p>
+                <p class="flex gap-x-2 items-center"><svg class="fill-facebook" xmlns="http://www.w3.org/2000/svg"
+                        enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
+                        <rect fill="none" height="24" width="24"></rect>
+                        <path
+                            d="M22,12c0-5.52-4.48-10-10-10S2,6.48,2,12c0,4.84,3.44,8.87,8,9.8V15H8v-3h2V9.5C10,7.57,11.57,6,13.5,6H16v3h-2 c-0.55,0-1,0.45-1,1v2h3v3h-3v6.95C18.05,21.45,22,17.19,22,12z">
+                        </path>
+                    </svg>
+                    <a href="https://www.facebook.com/groups/2430494963811548" target="_blank">Bodyline Sports</a>
+                </p>
+            </div>
+        </header>
+        <div class="relative">
+            <svg class="loading-progress">
+                <circle r="40%" cx="50%" cy="50%" />
+                <circle r="40%" cx="50%" cy="50%" />
+            </svg>
+            <div class="loading-progress-text"></div>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
