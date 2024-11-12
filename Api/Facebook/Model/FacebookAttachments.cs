@@ -1,36 +1,13 @@
 namespace Api.Facebook.Model;
 
-public class FacebookAttachments
-{
-    public required AttachmentsData[] Data { get; set; }
-}
+public record FacebookAttachments(AttachmentsData[] Data);
 
-public class AttachmentsData
-{
-    public required Media Media { get; set; }
-    public SubAttachments? SubAttachments { get; set; }
-    public string Title { get; set; } = "post image";
-}
+public record AttachmentsData(Media Media, FacebookSubAttachments? SubAttachments, string Title = "post image");
 
-public class Media
-{
-    public required Image Image { get; set; }
-}
+public record Media(FacebookImage Image);
 
-public class Image
-{
-    public required int Height { get; set;}
-    public required int Width { get; set;}
-    public required Uri Src { get; set;}
-}
+public record FacebookImage(int Height, int Width, Uri Src);
 
-public class SubAttachments
-{
-    public required SubAttachmentsData[] Data { get; set; }
-}
+public record FacebookSubAttachments(SubAttachmentsData[] Data);
 
-public class SubAttachmentsData
-{
-    public string Description { get; set; } = "post image";
-    public required Media Media { get; set; }
-}
+public record SubAttachmentsData(Media Media, string Description = "post image");

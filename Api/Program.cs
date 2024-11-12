@@ -1,8 +1,7 @@
-using System.Security.Claims;
 using Api.Facebook;
+using Api.Facebook.Dto;
 using Api.Facebook.Model;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
@@ -19,40 +18,6 @@ builder.Services.AddOpenTelemetry().UseAzureMonitor();
 builder.Services.AddMemoryCache();
 
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
-
-builder.Services
-    .AddAuthorizationBuilder()
-    .AddPolicy("Admin", policy => policy.RequireAssertion(context =>
-        {
-            var email = context.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Email);
-            return true;
-        }));
-
-
-builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        //options.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
-    })
-    // .AddFacebook(facebookOptions =>
-    // {
-    //     facebookOptions.AppId = builder.Configuration["FacebookOptions:AppId"] ?? facebookOptions.AppId;
-    //     facebookOptions.AppSecret = builder.Configuration["FacebookOptions:AppSecret"] ?? facebookOptions.AppSecret;
-    //     facebookOptions.AccessDeniedPath = "/";
-    //     facebookOptions.Events = new()
-    //     {
-    //         OnRedirectToAuthorizationEndpoint = (context) =>
-    //         {
-    //             context.Response.Redirect($"{context.RedirectUri}&config_id={builder.Configuration["FacebookOptions:ConfigId"]}");
-    //             return Task.CompletedTask;
-    //         },
-    //     };
-    //     facebookOptions.SaveTokens = true;
-    // })
-    .AddCookie()
-    // .AddIdentityCookies()
-    ;
 
 builder.Services.AddCors();
 
@@ -86,10 +51,10 @@ app.UseCors(builder =>
         .AllowAnyHeader()
 );
 
-app.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroup>, NotFound>> (string id, [FromServices]IFacebookService service) =>
+app.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroupDto>, NotFound>> (string id, [FromServices]IFacebookService service) =>
 {
     var group = await service.GetGroupAsync(id);
-    return group is null ? TypedResults.NotFound(): TypedResults.Ok(group);
+    return group is null ? TypedResults.NotFound(): TypedResults.Ok(group.ToDto());
 })
 .WithName("GetFacebookGroupDetails")
 .WithOpenApi();
@@ -111,5 +76,3 @@ app.MapGet("/facebook/longlivedtoken", async ([FromQuery]string userAccessToken,
 .WithOpenApi();
 
 app.Run();
-
-

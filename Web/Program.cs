@@ -19,4 +19,10 @@ builder.Services.AddHttpClient<FacebookApiClient>(client =>
     client.BaseAddress = new(builder.Configuration.GetValue<string>("ApiUrl") ?? "https://localhost:1234/");
 });
 
+
+builder.Services.AddMsalAuthentication(options =>
+{
+    builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
+});
+
 await builder.Build().RunAsync();

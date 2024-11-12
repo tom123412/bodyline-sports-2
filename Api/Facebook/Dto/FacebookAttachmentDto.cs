@@ -1,0 +1,7 @@
+namespace Api.Facebook.Dto;
+
+public record FacebookAttachmentDto(FacebookImageDto Image, FacebookSubAttachmentDto[] SubAttachments, string Title = "post image");
+
+public record FacebookImageDto(int Height, int Width, Uri Src);
+
+public record FacebookSubAttachmentDto(FacebookImageDto Media, string Title = "post image");
