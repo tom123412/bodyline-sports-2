@@ -8,7 +8,7 @@ namespace Api.Facebook;
 public interface IFacebookService
 {
     public Task<FacebookGroup?> GetGroupAsync(string groupId);
-    public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId, int? limit);
+    public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId);
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken);
 }
 
@@ -77,14 +77,14 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<Face
         }
     }
 
-    async Task<IEnumerable<FacebookPost>> IFacebookService.GetPostsForGroupAsync(string groupId, int? limit)
+    async Task<IEnumerable<FacebookPost>> IFacebookService.GetPostsForGroupAsync(string groupId)
     {
         await PostsLock.WaitAsync();
         try
         {
             var cacheKey = $"Posts-{groupId}";
             var posts = cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
-            var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={limit ?? _options.PostsToLoad}";
+            var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
             var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url);
             var newPosts = (feed?.Data ?? []).Where(p => p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Count() == 0).ToList();
 
@@ -92,7 +92,7 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<Face
 
             cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
 
-            return cache.Get<IEnumerable<FacebookPost>>(cacheKey)!.Take(limit ?? _options.PostsToLoad);
+            return cache.Get<IEnumerable<FacebookPost>>(cacheKey)!;
         }
         finally
         {
