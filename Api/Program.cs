@@ -15,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
+builder.Services.AddHealthChecks();
+
 builder.Services.AddMemoryCache();
 
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
@@ -50,6 +52,8 @@ app.UseCors(builder =>
         .AllowAnyMethod()
         .AllowAnyHeader()
 );
+
+app.MapHealthChecks("/health");
 
 app.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroupDto>, NotFound>> (string id, [FromServices]IFacebookService service) =>
 {

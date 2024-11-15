@@ -1,16 +1,16 @@
 ﻿@page "/admin/refresh-token"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.Extensions.Options
 @using Web.Facebook
 
 @inject IOptions<FacebookOptions> facebookOptions
+@inject NavigationManager navigation
 @* @inject IFacebook facebook *@
 @inject ILogger<RefreshAccessToken> logger
 
 @* @inject IHttpContextAccessor httpContextAccessor *@
-
-@attribute [Authorize(Policy = "Admin")]
 
 <PageTitle>Bodyline Sports (Admin)</PageTitle>
 
@@ -27,6 +27,10 @@
   </Authorized>
   <NotAuthorized>
     <p>You're not authorized.</p>
+    @{
+      //navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(navigation.Uri)}");
+    }
+    <RemoteAuthenticatorView Action="login" />
   </NotAuthorized>
 </AuthorizeView>
 
@@ -40,8 +44,8 @@
 
     @* ExpiresAt = (await facebook.GetTokenDetails(LongLivedAccessToken, UserAccessToken!)).Data.ExpiresAt;
 
-    var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
-    await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, LongLivedAccessToken)); *@
+var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, LongLivedAccessToken)); *@
 
     await base.OnInitializedAsync();
   }
@@ -49,10 +53,10 @@
   protected override void OnInitialized()
   {
     @* if (httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false)
-    {
-      var authFeatures = httpContextAccessor.HttpContext?.Features.Get<IAuthenticateResultFeature>();
-      UserAccessToken = authFeatures!.AuthenticateResult!.Properties!.GetTokenValue("access_token");
-    } *@
+{
+var authFeatures = httpContextAccessor.HttpContext?.Features.Get<IAuthenticateResultFeature>();
+UserAccessToken = authFeatures!.AuthenticateResult!.Properties!.GetTokenValue("access_token");
+} *@
 
     base.OnInitialized();
   }

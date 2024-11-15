@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Web;
@@ -19,10 +20,31 @@ builder.Services.AddHttpClient<FacebookApiClient>(client =>
     client.BaseAddress = new(builder.Configuration.GetValue<string>("ApiUrl") ?? "https://localhost:1234/");
 });
 
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy("Admin", policy => policy.AddRequirements(new AdminRequirement()));
+});
 
 builder.Services.AddMsalAuthentication(options =>
 {
-    builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
+    builder.Configuration.Bind("FacebookOidc", options.ProviderOptions.Authentication);
 });
 
+builder.Services.AddCascadingAuthenticationState();
+
 await builder.Build().RunAsync();
+
+
+class AdminRequirement : IAuthorizationRequirement {}
+
+class AdminRequirementHandler : AuthorizationHandler<AdminRequirement>
+{
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminRequirement requirement)
+    {
+        var user = context.User;
+        //context.Succeed(requirement);
+        context.Fail();
+
+        return Task.CompletedTask;
+    }
+}
