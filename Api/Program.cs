@@ -66,7 +66,7 @@ app.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroupDto>, Not
 app.MapGet("/facebook/groups/{id}/posts", async (string id, [FromServices]IFacebookService service) =>
 {
     var posts = await service.GetPostsForGroupAsync(id);
-    return TypedResults.Ok(posts);
+    return TypedResults.Ok(posts.Select(p => p.ToDto()));
 })
 .WithName("GetFacebookGroupPosts")
 .WithOpenApi();

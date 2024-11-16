@@ -1,11 +1,11 @@
 @using Web.Facebook
 
-<a href="@(AttachmentsData.Media.Image.Src)" target="_blank">
-    <img alt="@(AttachmentsData.Title)" src="@(AttachmentsData.Media.Image.Src)"
+<a href="@(Attachment.Image.Src)" target="_blank">
+    <img alt="@(Attachment.Title)" src="@(Attachment.Image.Src)"
         class="mx-auto pt-2" />
 </a>
 
 @code {
     [Parameter]
-    public required AttachmentsData AttachmentsData { get; set; }
+    public required FacebookAttachment Attachment { get; set; }
 }

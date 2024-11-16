@@ -10,15 +10,15 @@
     <article class="p-2 [background:canvas] rounded-xl shadow-md basis-4/5 shadow-black h-min [overflow-wrap:anywhere]">
         <p class="text-xs">@post.UpdatedDateTime.LocalDateTime.ToString(@"dd MMMM \a\t HH:mm")</p>
         <p class="pt-1">@((MarkupString?)(post.Message?.Replace("\n", "<br />") ?? string.Empty))</p>
-        @if (post.Attachments is not null)
+        @if (post.Attachments.Length > 0)
         {
-            @if (post.Attachments.Data[0].SubAttachments is not null)
+            @if (post.Attachments[0].SubAttachments.Length > 0)
             {
-                <FacebookPostsMultipleImages SubAttachmentsDatas="post.Attachments.Data[0].SubAttachments!.Data" />
+                <FacebookPostsMultipleImages SubAttachments="post.Attachments[0].SubAttachments" />
             }
             else
             {
-                <FacebookPostsImage AttachmentsData="post.Attachments.Data[0]" />
+                <FacebookPostsImage Attachment="post.Attachments[0]" />
             }
         }
     </article>

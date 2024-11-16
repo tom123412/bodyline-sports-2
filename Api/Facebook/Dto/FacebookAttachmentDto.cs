@@ -4,4 +4,4 @@ public record FacebookAttachmentDto(FacebookImageDto Image, FacebookSubAttachmen
 
 public record FacebookImageDto(int Height, int Width, Uri Src);
 
-public record FacebookSubAttachmentDto(FacebookImageDto Media, string Title = "post image");
+public record FacebookSubAttachmentDto(FacebookImageDto Image, string Title = "post image");

@@ -3,7 +3,7 @@
 
 <div class="grid grid-cols-6 gap-1">
     @{
-        var numberOfImages = Math.Min(5, SubAttachmentsDatas.Length);
+        var numberOfImages = Math.Min(5, SubAttachments.Length);
         var colsToSpan = new Dictionary<(int index, int numberOfImages), string>
         {
             {(0, 5), "col-span-3"},
@@ -25,15 +25,15 @@
     }
     @for (var i = 0; i < numberOfImages; i++)
     {
-        var attachment = SubAttachmentsDatas[i];
+        var attachment = SubAttachments[i];
         var elClass = colsToSpan[(i, numberOfImages)];
-        <a class="@(elClass)" href="@(attachment.Media.Image.Src)" target="_blank">
-            <img alt="@(attachment.Description)" src="@(attachment.Media.Image.Src)" class="mx-auto" />
+        <a class="@(elClass)" href="@(attachment.Image.Src)" target="_blank">
+            <img alt="@(attachment.Title)" src="@(attachment.Image.Src)" class="mx-auto" />
         </a>
     }
 </div>
 
 @code {
     [Parameter]
-    public SubAttachmentsData[] SubAttachmentsDatas { get; set; } = [];
+    public FacebookSubAttachment[] SubAttachments { get; set; } = [];
 }
