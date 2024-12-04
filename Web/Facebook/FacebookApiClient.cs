@@ -29,13 +29,14 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
 
     public async Task<FacebookGroup?> GetGroup(CancellationToken cancellationToken = default)
     {
-        var group = await httpClient.GetFromJsonAsync<FacebookGroup>($"/facebook/groups/{_options.GroupId}", cancellationToken: cancellationToken);
+        var x = httpClient;
+        var group = await httpClient.GetFromJsonAsync<FacebookGroup>($"/api/v1/facebook/groups/{_options.GroupId}", cancellationToken: cancellationToken);
         return group;
     }
 
     public async Task<IEnumerable<FacebookPost>> GetPostsForGroup(CancellationToken cancellationToken = default)
     {
-        var posts = await httpClient.GetFromJsonAsync<IEnumerable<FacebookPost>>($"/facebook/groups/{_options.GroupId}/posts", cancellationToken: cancellationToken);
+        var posts = await httpClient.GetFromJsonAsync<IEnumerable<FacebookPost>>($"/api/v1/facebook/groups/{_options.GroupId}/posts", cancellationToken: cancellationToken);
         return posts ?? [];
     }
 }

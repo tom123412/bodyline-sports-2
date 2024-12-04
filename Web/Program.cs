@@ -27,7 +27,7 @@ builder.Services.AddAuthorizationCore(options =>
 
 builder.Services.AddMsalAuthentication(options =>
 {
-    builder.Configuration.Bind("FacebookOidc", options.ProviderOptions.Authentication);
+    builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
 });
 
 builder.Services.AddCascadingAuthenticationState();
