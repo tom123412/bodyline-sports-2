@@ -19,7 +19,7 @@ jobs:
         with:
           submodules: true
           lfs: false
-      - name: install tailwind css
+      - name: Build Web Project
         working-directory: ./Web
         run: |
           dotnet build
@@ -36,6 +36,7 @@ jobs:
           api_location: "Api" # Api source code path - optional
           output_location: "wwwroot" # Built app content directory - optional
           deployment_environment: "staging"
+          skip_app_build: true
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
