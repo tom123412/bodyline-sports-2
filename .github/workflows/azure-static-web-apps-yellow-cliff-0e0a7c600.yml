@@ -10,10 +10,10 @@ on:
       - main
 
 jobs:
-  build_and_deploy_job:
+  build_and_deploy_swa_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: Publish and Deploy Static Web App Job
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,7 +40,21 @@ jobs:
         working-directory: ./Api
         run: |
           dotnet publish --configuration Release --output bin
-  
+
+  build_and_deploy_webapp_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Web APP Job
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+      - name: Publish API Project
+        working-directory: ./Api
+        run: |
+          dotnet publish --configuration Release --output bin
+                  
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
