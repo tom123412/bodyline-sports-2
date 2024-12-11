@@ -22,7 +22,7 @@ jobs:
       - name: install tailwind css
         working-directory: ./Web
         run: |
-          npm install -D tailwindcss
+          npm install -g tailwindcss
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
