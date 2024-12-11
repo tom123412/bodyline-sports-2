@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <Target Name="MyPreCompileTarget" BeforeTargets="Build">
+    <Exec Command="npm install -g tailwindcss" />
     <Exec Command="npx tailwindcss -i ./wwwroot/css/tailwind.css -o ./wwwroot/css/app.css --minify" />
   </Target>
 
