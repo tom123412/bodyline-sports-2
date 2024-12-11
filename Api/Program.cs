@@ -1,11 +1,10 @@
+using System.Net;
 using Api.Facebook;
-using Api.Facebook.Dto;
-using Api.Facebook.Model;
 using Asp.Versioning;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Net.Http.Headers;
+using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddOpenTelemetry().UseAzureMonitor();
+builder.Services
+    .AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            ;
+    })
+    .UseAzureMonitor();
 
 builder.Services.AddHealthChecks();
 
@@ -64,44 +72,30 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(builder => 
+app.UseCors(builder =>
     builder
         .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()
 );
 
+app.UseExceptionHandler(applicationBuilder =>
+{
+    applicationBuilder.Run(async context =>
+    {
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        if (exceptionHandlerPathFeature?.Error is HttpRequestException hre && hre.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+        }
+        else
+        {
+            await Results.Problem().ExecuteAsync(context);
+        }
+    });
+});
+
 app.MapHealthChecks("/health");
-
-var apiVersionSet = app
-    .NewApiVersionSet()
-    .HasApiVersion(new ApiVersion(1))
-    .ReportApiVersions()
-    .Build();
-
-var apiGroup = app
-    .MapGroup("api/v{version:apiVersion}")
-    .WithApiVersionSet(apiVersionSet);
-
-apiGroup.MapGet("/facebook/groups/{id}", async Task<Results<Ok<FacebookGroupDto>, NotFound>> (string id, [FromServices]IFacebookService service) =>
-{
-    var group = await service.GetGroupAsync(id);
-    return group is null ? TypedResults.NotFound(): TypedResults.Ok(group.ToDto());
-})
-.WithOpenApi();
-
-apiGroup.MapGet("/facebook/groups/{id}/posts", async (string id, [FromServices]IFacebookService service) =>
-{
-    var posts = await service.GetPostsForGroupAsync(id);
-    return TypedResults.Ok(posts.Select(p => p.ToDto()));
-})
-.WithOpenApi();
-
-apiGroup.MapGet("/facebook/longlivedtoken", async ([FromQuery]string userAccessToken, [FromServices]IFacebookService service) =>
-{
-    var tokenDetails = await service.GetLongLivedTokenDetailsAsync(userAccessToken);
-    return TypedResults.Ok(tokenDetails.ToDto());
-})
-.WithOpenApi();
+app.MapFacebookEndpoints();
 
 app.Run();

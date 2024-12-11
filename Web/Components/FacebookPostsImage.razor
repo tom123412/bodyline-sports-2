@@ -1,8 +1,7 @@
 @using Web.Facebook
 
 <a href="@(Attachment.Image.Src)" target="_blank">
-    <img alt="@(Attachment.Title)" src="@(Attachment.Image.Src)"
-        class="mx-auto pt-2" />
+    <img alt="@(Attachment.Title)" src="@(Attachment.Image.Src)" class="mx-auto pt-2" loading="lazy" />
 </a>
 
 @code {
