@@ -20,7 +20,7 @@ jobs:
           submodules: true
           lfs: false
       - name: install tailwind css
-        working-directory: .
+        working-directory: ./Web
         run: |
           npm install -D tailwindcss
       - name: Build And Deploy
