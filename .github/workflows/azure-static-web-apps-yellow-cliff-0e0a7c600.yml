@@ -36,7 +36,11 @@ jobs:
           deployment_environment: "staging"
           skip_app_build: true
           ###### End of Repository/Build Configurations ######
-
+      - name: Publish API Project
+        working-directory: ./Api
+        run: |
+          dotnet publish --configuration Release --output bin
+  
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
