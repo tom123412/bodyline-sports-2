@@ -22,8 +22,8 @@ jobs:
       - name: Build Web Project
         working-directory: ./Web
         run: |
-          dotnet build
-      - name: Build And Deploy
+          dotnet build --configuration Release
+      - name: Deploy Web Project
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
