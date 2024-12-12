@@ -49,7 +49,7 @@ jobs:
       - name: Publish API Project
         working-directory: ./Api
         run: |
-          dotnet publish --configuration Release --output bin/publish --self-contained true /p:UseAppHost=true
+          dotnet publish --configuration Release --output bin/publish
       - name: Deploy Api Project
         uses: azure/webapps-deploy@v2
         with:
