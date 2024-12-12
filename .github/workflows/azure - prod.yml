@@ -1,17 +1,10 @@
-name: Azure CI/CD
+name: Azure Prod Deployment
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
+  workflow_dispatch: 
 
 jobs:
   build_and_deploy_swa_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Publish and Deploy Static Web App Job
     steps:
@@ -38,7 +31,6 @@ jobs:
           ###### End of Repository/Build Configurations ######
 
   build_and_deploy_webapp_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Web APP Job
     steps:
@@ -49,23 +41,4 @@ jobs:
       - name: Publish API Project
         working-directory: ./Api
         run: |
-          dotnet publish --configuration Release --output bin/publish
-      - name: Deploy Api Project
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "bodylinesports-staging-api"
-          publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_PROFILE }}
-          package: 'api/bin/publish'  
-                              
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          app_location: "Web" # here to remove vs code error in file
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_CLIFF_0E0A7C600 }}
-          action: "close"
+          dotnet publish --configuration Release --output bin
