@@ -1,6 +1,6 @@
 {
     "globalHeaders": {
-        "xx-blazor-environment": "Staging",
+        "blazor-environment": "Staging",
         "content-security-policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'"
     }
 }
