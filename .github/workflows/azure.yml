@@ -27,7 +27,7 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_CLIFF_0E0A7C600 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_SWA_STAGING_DEPLOYMENT_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
@@ -49,13 +49,13 @@ jobs:
       - name: Publish API Project
         working-directory: ./Api
         run: |
-          dotnet publish --configuration Release --output bin/publish
+          dotnet publish --configuration Release --output bin/publish --self-contained true /p:UseAppHost=true
       - name: Deploy Api Project
         uses: azure/webapps-deploy@v2
         with:
           app-name: "bodylinesports-staging-api"
           publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_PROFILE }}
-          package: 'api/bin/publish'  
+          package: 'Api/bin/publish'  
                               
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
