@@ -54,7 +54,6 @@ builder.Services.AddApiVersioning(options =>
         new QueryStringApiVersionReader(),
         new HeaderApiVersionReader("X-Api-Version"));
 })
-//.AddMvc() // This is needed for controllers
 .AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'V";
