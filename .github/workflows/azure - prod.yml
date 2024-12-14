@@ -32,7 +32,7 @@ jobs:
 
   build_and_deploy_webapp_job:
     runs-on: ubuntu-latest
-    name: Build and Deploy Web APP Job
+    name: Publish and Deploy Web App Job
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,3 +42,9 @@ jobs:
         working-directory: ./Api
         run: |
           dotnet publish --configuration Release --output bin
+      - name: Deploy Api Project
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "bodylinesports-staging-api"
+          publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_PROFILE }}
+          package: 'Api/bin/publish' 

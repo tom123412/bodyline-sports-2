@@ -39,6 +39,11 @@ class AdminRequirement : IAuthorizationRequirement {}
 
 class AdminRequirementHandler : AuthorizationHandler<AdminRequirement>
 {
+    public override Task HandleAsync(AuthorizationHandlerContext context)
+    {
+        return base.HandleAsync(context);
+    }
+    
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminRequirement requirement)
     {
         var user = context.User;
