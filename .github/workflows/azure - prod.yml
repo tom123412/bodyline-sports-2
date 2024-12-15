@@ -51,6 +51,6 @@ jobs:
       - name: Deploy Api Project
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "bodylinesports-api"
+          app-name: "bodylinesports-prod-api"
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROD_PROFILE }}
           package: 'Api/bin/publish' 
