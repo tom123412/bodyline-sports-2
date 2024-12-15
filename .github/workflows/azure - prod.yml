@@ -16,11 +16,17 @@ jobs:
         working-directory: ./Web
         run: |
           dotnet publish --configuration Release --output bin
+      - name: Replace values in JSON file
+        uses: tnikFi/json-file-transform@v1
+        with:
+          files: '**/staticwebapp.config.json'
+          key-value-pairs: |
+            globalHeaders.blazor-environment=
       - name: Deploy Web Project
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_SWA_STAGING_DEPLOYMENT_TOKEN }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_SWA_STAGING_PROD_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
