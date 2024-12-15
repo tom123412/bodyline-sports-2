@@ -32,7 +32,7 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "Web/bin/wwwroot" # App source code path
-          deployment_environment: "production"
+          production_branch: "main"
           skip_app_build: true
           ###### End of Repository/Build Configurations ######
 
