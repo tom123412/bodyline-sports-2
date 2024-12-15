@@ -16,8 +16,8 @@ jobs:
         working-directory: ./Web
         run: |
           dotnet publish --configuration Release --output bin
-      - name: Replace values in JSON file
-        uses: tnikFi/json-file-transform@v1
+      - name: Remove Blazor Environment Header
+        uses: tnikFi/json-file-transform@v2
         with:
           files: '**/staticwebapp.config.json'
           key-value-pairs: |
