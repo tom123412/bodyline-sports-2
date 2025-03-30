@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -14,8 +14,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
   </ItemGroup>
 
-  <Target Name="MyPreCompileTarget" BeforeTargets="Build">
-    <Exec Command="npx tailwindcss -i ./wwwroot/css/tailwind.css -o ./wwwroot/css/app.css --minify" />
+  <Target Name="Tailwind" BeforeTargets="Build">
+    <Exec Command="npx --yes @tailwindcss/cli -i ./wwwroot/css/tailwind.css -o ./wwwroot/css/app.css --minify" />
   </Target>
 
 </Project>

@@ -14,7 +14,7 @@
             "name": "C#: API Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/API/API.csproj"
+            "projectPath": "${workspaceFolder}/Api/Api.csproj"
         },
     ],
     "compounds": [
