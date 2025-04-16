@@ -35,7 +35,7 @@ builder.Services.AddCors();
 builder.Services
     .AddHttpClient("Facebook", (httpClient) =>
     {
-        httpClient.BaseAddress = new Uri("https://graph.facebook.com/v21.0/");
+        httpClient.BaseAddress = new Uri("https://graph.facebook.com/v22.0/");
         httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
     })
     .AddHttpMessageHandler<FacebookAuthorisationHeaderHandler>()
@@ -49,10 +49,6 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1);
     options.ReportApiVersions = true;
     options.AssumeDefaultVersionWhenUnspecified = true;
-    options.ApiVersionReader = ApiVersionReader.Combine(
-        new UrlSegmentApiVersionReader(),
-        new QueryStringApiVersionReader(),
-        new HeaderApiVersionReader("X-Api-Version"));
 })
 .AddApiExplorer(options =>
 {

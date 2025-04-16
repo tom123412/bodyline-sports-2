@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "C#: Admin Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Admin/Admin.csproj"
+        },       
+        {
             "name": "C#: Web Debug",
             "type": "dotnet",
             "request": "launch",

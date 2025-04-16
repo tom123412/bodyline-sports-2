@@ -1,0 +1,80 @@
+﻿@page "/admin"
+
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Options
+@using global::Admin.Azure
+@using global::Admin.Facebook
+@using global::Azure.Data.AppConfiguration
+@using global::Azure.Identity
+
+@* @inject IOptions<AzureOptions> azureOptions *@
+@inject IOptions<FacebookOptions> facebookOptions
+@* @inject FacebookService facebook *@
+@inject IHttpContextAccessor httpContextAccessor
+@inject IHttpClientFactory httpClientFactory
+@inject IOptions<AzureOptions> azureOptions
+    
+@attribute [Authorize(Policy = "Admin")]
+
+<PageTitle>Bodyline Sports (Admin)</PageTitle>
+
+<AuthorizeView Context="authContext" Policy="Admin">
+    <Authorized>
+        <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a>
+
+        <p>long lived token</p>
+        <p>@LongLivedAccessToken</p>
+        <p>user access  token</p>
+        <p>@UserAccessToken</p>
+
+        <p>user token data</p>
+        <p>@TokenData?.IsValid</p>
+        <p>@TokenData?.ExpiresAt</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You're not authorized.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string? LongLivedAccessToken { get; set; }
+    private string? UserAccessToken { get; set; }
+    private TokenData? TokenData { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+
+        TokenData = (await GetTokenDetails(UserAccessToken!)).Data;
+
+        var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+        await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        if (httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false)
+        {
+            var authFeatures = httpContextAccessor.HttpContext?.Features.Get<IAuthenticateResultFeature>();
+            var userAccessToken = authFeatures!.AuthenticateResult!.Properties!.GetTokenValue("access_token");
+
+            LongLivedAccessToken = facebookOptions.Value.AccessToken;
+            UserAccessToken = userAccessToken!;
+        }
+
+        base.OnInitialized();
+    }
+    async Task<TokenDetails> GetTokenDetails(string token)
+    {
+        var url = $"/debug_token?input_token={token}&access_token={UserAccessToken}";
+        var httpClient = httpClientFactory.CreateClient("Facebook");
+        var tokenDetails = await httpClient.GetFromJsonAsync<TokenDetails>(url);
+        return tokenDetails!;
+    }
+}

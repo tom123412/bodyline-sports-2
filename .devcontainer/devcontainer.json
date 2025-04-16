@@ -25,13 +25,18 @@
 		5177,
 		7126,
 		7000,
-		5289
+		5289,
+		7120,
+		5145
 	],
 	"portsAttributes": {
 		"7126": {
 			"protocol": "https"
 		},
 		"7000": {
+			"protocol": "https"
+		},
+		"7120": {
 			"protocol": "https"
 		}
 	},
