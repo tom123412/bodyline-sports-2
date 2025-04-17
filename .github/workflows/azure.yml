@@ -83,7 +83,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: "bodylinesports-staging-admin"
-          publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_PROFILE }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_ADMIN_PROFILE }}
           package: 'Admin/bin/publish'  
                               
   close_pull_request_job:
