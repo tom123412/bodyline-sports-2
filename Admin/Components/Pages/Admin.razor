@@ -11,9 +11,7 @@
 @using global::Azure.Data.AppConfiguration
 @using global::Azure.Identity
 
-@* @inject IOptions<AzureOptions> azureOptions *@
 @inject IOptions<FacebookOptions> facebookOptions
-@* @inject FacebookService facebook *@
 @inject IHttpContextAccessor httpContextAccessor
 @inject IHttpClientFactory httpClientFactory
 @inject IOptions<AzureOptions> azureOptions
@@ -26,10 +24,10 @@
     <Authorized>
         <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a>
 
-        <p>long lived token</p>
+        @* <p>long lived token</p>
         <p>@LongLivedAccessToken</p>
         <p>user access  token</p>
-        <p>@UserAccessToken</p>
+        <p>@UserAccessToken</p> *@
 
         <p>user token data</p>
         <p>@TokenData?.IsValid</p>
