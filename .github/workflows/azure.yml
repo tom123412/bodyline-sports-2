@@ -84,18 +84,6 @@ jobs:
           app-name: "bodylinesports-staging-admin"
           publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_ADMIN_PROFILE }}
           package: 'Admin/bin/publish'
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_ADMIN_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_ADMIN_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_ADMIN_SUBSCRIPTION_ID }}
-      - name: Set Environment Variables for Admin Project
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: "bodylinesports-staging-admin"
-          app-settings-json: '[{ "name": "ASPNETCORE_ENVIRONMENT", "value": "Staging", "slotSetting": false }]'
-                              
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
