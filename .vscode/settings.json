@@ -1,4 +1,12 @@
 {
     "appService.defaultWebAppToDeploy": "",
-    "appService.deploySubpath": "Api\\bin\\Publish"
+    "appService.deploySubpath": "Api\\bin\\Publish",
+    "cSpell.words": [
+        "appservice",
+        "ASPNETCORE",
+        "bodylinesports",
+        "creds",
+        "webapps",
+        "wwwroot"
+    ]
 }
