@@ -73,7 +73,6 @@ builder.Services
         httpClient.BaseAddress = new Uri("https://graph.facebook.com/v22.0/");
         httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
     })
-    //.AddHttpMessageHandler<AddAuthorisationHeaderHandler>()
     ;
 
 var app = builder.Build();
