@@ -30,13 +30,11 @@
         <p>@UserAccessToken</p> *@
 
         <p>user token data</p>
-        <p>@TokenData?.IsValid</p>
-        <p>@TokenData?.ExpiresAt</p>
+        <p>Expires at @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss t ")</p>
     </Authorized>
     <NotAuthorized>
         <p>You're not authorized.</p>
-    </NotAuthorized>
-</AuthorizeView>
+</AExpires at uthorizeView>MMM yy hh:mm:ss t 
 
 @code {
     private string? LongLivedAccessToken { get; set; }
