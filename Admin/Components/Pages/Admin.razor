@@ -23,18 +23,11 @@
 <AuthorizeView Context="authContext" Policy="Admin">
     <Authorized>
         <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a>
-
-        @* <p>long lived token</p>
-        <p>@LongLivedAccessToken</p>
-        <p>user access  token</p>
-        <p>@UserAccessToken</p> *@
-
-        <p>user token data</p>
-        <p>Expires at @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss t ")</p>
+        <p>Token will expire on @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss tt ")</p>
     </Authorized>
     <NotAuthorized>
-        <p>You're not authorized.</p>
-</AExpires at uthorizeView>MMM yy hh:mm:ss t 
+    </NotAuthorized>
+</AuthorizeView>MMM yyyy
 
 @code {
     private string? LongLivedAccessToken { get; set; }
