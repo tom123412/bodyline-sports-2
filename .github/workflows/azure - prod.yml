@@ -41,7 +41,7 @@ jobs:
 
   build_and_deploy_api_job:
     runs-on: ubuntu-latest
-    name: Publish and Deploy Web App Job
+    name: Publish and Deploy Web App Job (Api)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,7 +62,7 @@ jobs:
           package: 'Api/bin/publish' 
   build_and_deploy_admin_job:
     runs-on: ubuntu-latest
-    name: Publish and Deploy Web App Job
+    name: Publish and Deploy Web App Job (Admin)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,4 +80,4 @@ jobs:
         with:
           app-name: "bodylinesports-prod-admin"
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROD_ADMIN_PROFILE }}
-          package: 'Api/bin/publish'           
+          package: 'Admin/bin/publish'           
