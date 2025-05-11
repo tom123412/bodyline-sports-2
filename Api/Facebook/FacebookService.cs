@@ -12,7 +12,7 @@ public interface IFacebookService
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken);
 }
 
-public class FacebookService(IHttpClientFactory httpClientFactory, IOptions<FacebookOptions> options, IMemoryCache cache)
+public class FacebookService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<FacebookOptions> options, IMemoryCache cache)
     : IFacebookService
 {
 

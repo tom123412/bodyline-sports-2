@@ -1,6 +1,7 @@
 using System.Net;
 using Api.Facebook;
 using Asp.Versioning;
+using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Net.Http.Headers;
@@ -27,6 +28,21 @@ builder.Services
 builder.Services.AddHealthChecks();
 
 builder.Services.AddMemoryCache();
+
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options
+    .Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential())
+    .ConfigureRefresh(configure =>
+            {
+                const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+                configure
+                    .Register($"{AccessTokenKey}", refreshAll: true)
+                    .SetRefreshInterval(TimeSpan.FromSeconds(1))
+                    ;
+            })
+        ;
+});
 
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
 
