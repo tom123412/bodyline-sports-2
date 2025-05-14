@@ -3,28 +3,42 @@
 
 @inject IOptions<FacebookOptions> options
 @inject ILogger<FacebookPosts> logger
-@inject FacebookApiClient facebookApiClient    
+@inject FacebookApiClient facebookApiClient
 
-@foreach (var post in Posts)
+@if (IsLoading)
 {
-    <article class="p-2 [background:canvas] rounded-xl shadow-md basis-4/5 shadow-black h-min [overflow-wrap:anywhere]">
-        <p class="text-xs">@post.UpdatedDateTime.LocalDateTime.ToString(@"dd MMMM \a\t HH:mm")</p>
-        <p class="pt-1">@((MarkupString?)(post.Message?.Replace("\n", "<br />") ?? string.Empty))</p>
-        @if (post.Attachments.Length > 0)
-        {
-            @if (post.Attachments[0].SubAttachments.Length > 0)
+    <div class="flex justify-center items-center h-full">
+        <MessageWithTimer Message="Loading Facebook posts..." />
+    </div>
+}
+else if (Posts.Count() > 0)
+{
+    @foreach (var post in Posts)
+    {
+        <article class="p-2 [background:canvas] rounded-xl shadow-md basis-4/5 shadow-black h-min [overflow-wrap:anywhere]">
+            <p class="text-xs">@post.UpdatedDateTime.LocalDateTime.ToString(@"dd MMMM \a\t HH:mm")</p>
+            <p class="pt-1">@((MarkupString?)(post.Message?.Replace("\n", "<br />") ?? string.Empty))</p>
+            @if (post.Attachments.Length > 0)
             {
-                <FacebookPostsMultipleImages SubAttachments="post.Attachments[0].SubAttachments" />
+                @if (post.Attachments[0].SubAttachments.Length > 0)
+                {
+                    <FacebookPostsMultipleImages SubAttachments="post.Attachments[0].SubAttachments" />
+                }
+                else
+                {
+                    <FacebookPostsImage Attachment="post.Attachments[0]" />
+                }
             }
-            else
-            {
-                <FacebookPostsImage Attachment="post.Attachments[0]" />
-            }
-        }
-    </article>
+        </article>
+    }
+}
+else
+{
+    <p>Error loading Facebook posts</p>
 }
 
 @code {
+    private bool IsLoading { get; set; } = true;
     private IEnumerable<FacebookPost> Posts { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
@@ -37,6 +51,9 @@
         {
             logger.LogError(e, "{exceptionMessage} getting posts for group {groupId}", e.Message, options.Value.GroupId);
         }
-
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }
