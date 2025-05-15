@@ -7,7 +7,7 @@
 
 @if (IsLoading)
 {
-    <div class="flex justify-center items-center h-full">
+    <div class="flex justify-center items-center h-full text-black">
         <MessageWithTimer Message="Loading Facebook posts..." />
     </div>
 }
@@ -34,7 +34,7 @@ else if (Posts.Count() > 0)
 }
 else
 {
-    <p>Error loading Facebook posts</p>
+    <p class="text-black">Error loading Facebook posts</p>
 }
 
 @code {
