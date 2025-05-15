@@ -1,9 +1,36 @@
-﻿<p>@Message</p>
+﻿@using System.Diagnostics
+<p>@(Message)...@(Stopwatch.ElapsedMilliseconds/1000)s </p>
 
 @code {
+    private readonly CancellationTokenSource _cancellationToken = new();
+
+    private Stopwatch Stopwatch {get;} = new();
+
     [Parameter]
     public string Message { get; set; } = string.Empty;
     
     [Parameter]
     public bool Running { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Running)
+        {
+            _ = StartTimerAsync();
+        }
+        else
+        {
+            _cancellationToken.Cancel();
+        }
+    }
+
+    private async Task StartTimerAsync()
+    {
+        Stopwatch.Start();
+        PeriodicTimer periodicTimer = new(TimeSpan.FromSeconds(1));
+        while (await periodicTimer.WaitForNextTickAsync(_cancellationToken.Token))
+        {
+            StateHasChanged();
+        }
+    }
 }

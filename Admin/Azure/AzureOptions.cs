@@ -2,5 +2,5 @@ namespace Admin.Azure;
 
 public class AzureOptions
 {
-    public Uri AppConfigurationEndpoint { get; set; }
+    public required Uri AppConfigurationEndpoint { get; set; }
 };
