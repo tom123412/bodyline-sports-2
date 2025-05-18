@@ -12,17 +12,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
-    options
-    .Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential())
-    .ConfigureRefresh(configure =>
-            {
-                const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
-                configure
-                    .Register($"{AccessTokenKey}", refreshAll: true)
-                    .SetRefreshInterval(TimeSpan.FromSeconds(1))
-                    ;
-            })
-        ;
+    var connectionString = builder.Configuration["AzureOptions:AppConfigurationConnectionString"];
+
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        options.Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential());
+    }
+    else
+    {
+        options.Connect(connectionString);
+    }
+
+    options.ConfigureRefresh(configure =>
+    {
+        const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+        configure
+            .Register($"{AccessTokenKey}", refreshAll: true)
+            .SetRefreshInterval(TimeSpan.FromSeconds(1))
+            ;
+    });
 });
 
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
