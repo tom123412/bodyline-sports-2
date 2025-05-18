@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Http
 @using Microsoft.Extensions.Options
+@using System.Text.Json.Serialization
 @using global::Admin.Azure
 @using global::Admin.Facebook
 @using global::Azure.Data.AppConfiguration
@@ -30,7 +31,19 @@
 </AuthorizeView>
 
 @code {
-    private string? LongLivedAccessToken { get; set; }
+    class FacebookCode
+    {
+        public required string Code { get; set; }
+    }
+
+    class FacebookAccessToken
+    {
+        [JsonPropertyName("access_token")]
+        public required string AccessToken { get; set; }
+        [JsonPropertyName("machine_id")]
+        public string? MachineId { get; set; }
+    }
+
     private string? UserAccessToken { get; set; }
     private TokenData? TokenData { get; set; }
 
@@ -38,7 +51,9 @@
     {
         const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
 
-        TokenData = (await GetTokenDetails(UserAccessToken!)).Data;
+        var UserAccessToken = await SwapForLongLivedTokenAsync();
+
+        TokenData = (await GetTokenDetailsAsync(UserAccessToken)).Data;
 
         var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
         await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
@@ -52,18 +67,30 @@
         {
             var authFeatures = httpContextAccessor.HttpContext?.Features.Get<IAuthenticateResultFeature>();
             var userAccessToken = authFeatures!.AuthenticateResult!.Properties!.GetTokenValue("access_token");
-
-            LongLivedAccessToken = facebookOptions.Value.AccessToken;
             UserAccessToken = userAccessToken!;
         }
 
         base.OnInitialized();
     }
-    async Task<TokenDetails> GetTokenDetails(string token)
+    
+    private async Task<TokenDetails> GetTokenDetailsAsync(string token)
     {
         var url = $"/debug_token?input_token={token}&access_token={UserAccessToken}";
         var httpClient = httpClientFactory.CreateClient("Facebook");
         var tokenDetails = await httpClient.GetFromJsonAsync<TokenDetails>(url);
         return tokenDetails!;
+    }
+    
+    private async Task<string> SwapForLongLivedTokenAsync()
+    {
+        var redirectUri = "https://musical-waddle-qxxww7r7x5w2xjjp-7120.app.github.dev/signin-facebook";
+        var codeUrl = $"/oauth/client_code?client_id={facebookOptions.Value.AppId}&client_secret={facebookOptions.Value.AppSecret}&redirect_uri={redirectUri}&access_token={facebookOptions.Value.AccessToken}";
+        var httpClient = httpClientFactory.CreateClient("Facebook");
+        var code = await httpClient.GetFromJsonAsync<FacebookCode>(codeUrl);
+
+        var tokenUrl = $"/oauth/access_token?client_id={facebookOptions.Value.AppId}&redirect_uri={redirectUri}&code={code!.Code}";    
+        var token = await httpClient.GetFromJsonAsync<FacebookAccessToken>(tokenUrl);
+
+        return token!.AccessToken;
     }
 }
