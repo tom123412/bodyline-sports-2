@@ -18,17 +18,17 @@ public static class ModelDtoExtensions
     public static FacebookPostDto ToDto(this FacebookPost model)
     {
         return new FacebookPostDto(model.Id, model.Message, model.UpdatedDateTime, model.Type, 
-            model.Attachments?.ToDto() ?? [], model.Tags.Select(t => new FacebookTagDto(t.Name)).ToArray());
+            model.Attachments?.ToDto() ?? [], [.. model.Tags.Select(t => new FacebookTagDto(t.Name))]);
     }
 
     public static FacebookAttachmentDto[] ToDto(this FacebookAttachments model)
     {
-        return model.Data.Select(a => new FacebookAttachmentDto(a.Media.Image.ToDto(), a.SubAttachments?.ToDto() ?? [], a.Title)).ToArray();
+        return [.. model.Data.Select(a => new FacebookAttachmentDto(a.Media?.Image.ToDto(), a.SubAttachments?.ToDto() ?? [], a.Title))];
     }    
 
     public static FacebookSubAttachmentDto[] ToDto(this FacebookSubAttachments model)
     {
-        return model.Data.Select(a => new FacebookSubAttachmentDto(a.Media.Image.ToDto(), a.Description)).ToArray();
+        return [.. model.Data.Select(a => new FacebookSubAttachmentDto(a.Media.Image.ToDto(), a.Description))];
     }    
 
     public static FacebookImageDto ToDto(this FacebookImage model)

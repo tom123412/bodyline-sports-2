@@ -2,12 +2,15 @@
     "appService.defaultWebAppToDeploy": "",
     "appService.deploySubpath": "Api\\bin\\Publish",
     "cSpell.words": [
+        "Antiforgery",
         "appservice",
         "ASPNETCORE",
         "Bodyline",
         "bodylinesports",
         "creds",
         "fbonly",
+        "HSTS",
+        "longlivedtoken",
         "nameof",
         "webapps",
         "wwwroot"
