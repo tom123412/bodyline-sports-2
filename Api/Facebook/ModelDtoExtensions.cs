@@ -23,7 +23,7 @@ public static class ModelDtoExtensions
 
     public static FacebookAttachmentDto[] ToDto(this FacebookAttachments model)
     {
-        return [.. model.Data.Select(a => new FacebookAttachmentDto(a.Media?.Image.ToDto(), a.SubAttachments?.ToDto() ?? [], a.Title))];
+        return [.. model.Data.Where(a => a.Media is not null).Select(a => new FacebookAttachmentDto(a.Media!.Image.ToDto(), a.SubAttachments?.ToDto() ?? [], a.Title))];
     }    
 
     public static FacebookSubAttachmentDto[] ToDto(this FacebookSubAttachments model)
