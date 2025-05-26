@@ -56,7 +56,7 @@ jobs:
         run: |
           dotnet publish --configuration Release --output bin/publish
       - name: Deploy Api Project
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: "bodylinesports-staging-api"
           publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_PROFILE }}
@@ -79,7 +79,7 @@ jobs:
         run: |
           dotnet publish --configuration Release --output bin/publish
       - name: Deploy Admin Project
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: "bodylinesports-staging-admin"
           publish-profile: ${{ secrets.AZURE_PUBLISH_STAGING_ADMIN_PROFILE }}
