@@ -49,15 +49,18 @@
 
     protected async override Task OnInitializedAsync()
     {
-        const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+        if (UserAccessToken is not null)
+        {
+            const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
 
-        var UserAccessToken = await SwapForLongLivedTokenAsync();
+            //var userAccessToken = await SwapForLongLivedTokenAsync();
 
-        TokenData = (await GetTokenDetailsAsync(UserAccessToken)).Data;
+            TokenData = (await GetTokenDetailsAsync(UserAccessToken)).Data;
 
-        var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
-        await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
-
+            var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+            await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
+        }
+        
         await base.OnInitializedAsync();
     }
 
