@@ -83,7 +83,8 @@
     
     private async Task<string> SwapForLongLivedTokenAsync()
     {
-        var redirectUri = "https://musical-waddle-qxxww7r7x5w2xjjp-7120.app.github.dev/signin-facebook";
+        var request = httpContextAccessor.HttpContext!.Request;
+        var redirectUri = $"{request.Scheme}://{request.Host}/signin-facebook";
         var codeUrl = $"/oauth/client_code?client_id={facebookOptions.Value.AppId}&client_secret={facebookOptions.Value.AppSecret}&redirect_uri={redirectUri}&access_token={facebookOptions.Value.AccessToken}";
         var httpClient = httpClientFactory.CreateClient("Facebook");
         var code = await httpClient.GetFromJsonAsync<FacebookCode>(codeUrl);
