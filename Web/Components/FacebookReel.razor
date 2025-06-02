@@ -1,0 +1,8 @@
+﻿<iframe src="@ReelEmbedUrl" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" height="400"></iframe>
+
+@code {
+    private string ReelEmbedUrl => $"https://www.facebook.com/plugins/video.php?href={Uri.EscapeDataString(ReelUrl.AbsoluteUri)}&show_text=false&t=0";
+
+    [Parameter, EditorRequired]
+    public Uri ReelUrl { get; set; }
+}

@@ -7,4 +7,5 @@ public sealed class FacebookOptions
     public required string AppSecret { get; set; }
     public required int PostsToLoad { get; set; }
     public string[] TagsToHide { get; set; } = [];
+    public string GraphUri { get; set; } = "https://graph.facebook.com/v23.0/";
 }

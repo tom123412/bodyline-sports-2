@@ -2,9 +2,12 @@
     "appService.defaultWebAppToDeploy": "",
     "appService.deploySubpath": "Api\\bin\\Publish",
     "cSpell.words": [
+        "allowfullscreen",
         "Antiforgery",
         "appservice",
         "ASPNETCORE",
+        "Authorisation",
+        "autoplay",
         "Bodyline",
         "bodylinesports",
         "creds",

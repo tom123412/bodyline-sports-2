@@ -29,6 +29,10 @@ else if (Posts.Count() > 0)
                     <FacebookPostsImage Attachment="post.Attachments[0]" />
                 }
             }
+            @foreach (var reel in post.Reels)
+            {
+                <FacebookReel ReelUrl="new Uri(reel)" />
+            }
         </article>
     }
 }

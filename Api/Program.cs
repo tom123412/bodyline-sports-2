@@ -4,6 +4,7 @@ using Asp.Versioning;
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OpenTelemetry.Metrics;
 
@@ -49,28 +50,33 @@ builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key
 builder.Services.AddCors();
 
 builder.Services
-    .AddHttpClient("Facebook", (httpClient) =>
+    .AddHttpClient("Facebook", (sp, httpClient) =>
     {
-        httpClient.BaseAddress = new Uri("https://graph.facebook.com/v22.0/");
+        var facebookOptions = sp.GetRequiredService<IOptions<FacebookOptions>>().Value;
+        httpClient.BaseAddress = new Uri(facebookOptions.GraphUri);
         httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
     })
     .AddHttpMessageHandler<FacebookAuthorisationHeaderHandler>()
     ;
 
+builder.Services.AddAzureAppConfiguration();
+
 builder.Services.AddTransient<FacebookAuthorisationHeaderHandler>();
 builder.Services.AddScoped<IFacebookService, FacebookService>();
 
-builder.Services.AddApiVersioning(options =>
-{
-    options.DefaultApiVersion = new ApiVersion(1);
-    options.ReportApiVersions = true;
-    options.AssumeDefaultVersionWhenUnspecified = true;
-})
-.AddApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'V";
-    options.SubstituteApiVersionInUrl = true;
-});
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1);
+        options.ReportApiVersions = true;
+        options.AssumeDefaultVersionWhenUnspecified = true;
+    })
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'V";
+        options.SubstituteApiVersionInUrl = true;
+    })
+    ;
 
 var app = builder.Build();
 
