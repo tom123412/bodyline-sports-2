@@ -60,11 +60,11 @@
             ConfigurationClient client;
             if (string.IsNullOrWhiteSpace(azureOptions.Value.AppConfigurationConnectionString))
             {
-                client = new ConfigurationClient(azureOptions.Value.AppConfigurationConnectionString);
+                client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
             }
             else
             {
-                client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+                client = new ConfigurationClient(azureOptions.Value.AppConfigurationConnectionString);
             }
             await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
         }
