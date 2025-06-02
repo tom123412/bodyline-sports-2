@@ -57,7 +57,15 @@
 
             TokenData = (await GetTokenDetailsAsync(UserAccessToken)).Data;
 
-            var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+            ConfigurationClient client;
+            if (string.IsNullOrWhiteSpace(azureOptions.Value.AppConfigurationConnectionString))
+            {
+                client = new ConfigurationClient(azureOptions.Value.AppConfigurationConnectionString);
+            }
+            else
+            {
+                client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+            }
             await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
         }
         
