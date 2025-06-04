@@ -12,10 +12,8 @@ public interface IFacebookService
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken);
 }
 
-public class FacebookService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<FacebookOptions> options, IMemoryCache cache)
-    : IFacebookService
+public class FacebookService: IFacebookService
 {
-
     private class FacebookErrorResponse
     {
         public required string Message { get; set; }
@@ -32,16 +30,23 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptionsSnaps
         public required FacebookPost[] Data { get; set; }
     }
 
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("Facebook");
-    private readonly FacebookOptions _options = options.Value;
-
     private static readonly SemaphoreSlim GroupLock = new(1, 1);
     private static readonly SemaphoreSlim PostsLock = new(1, 1);
+    private readonly HttpClient _httpClient;
+    private readonly FacebookOptions _options;
+    private readonly IMemoryCache _cache;
+    private readonly MemoryCacheEntryOptions _cacheOptions;
 
-    private readonly MemoryCacheEntryOptions _cacheOptions = new()
+    public FacebookService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<FacebookOptions> options, IMemoryCache cache)
     {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2),
-    };
+        _httpClient = httpClientFactory.CreateClient("Facebook");
+        _options = options.Value;
+        _cache = cache;
+        _cacheOptions = new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(_options.HoursToCache),
+        };
+    }
 
     async Task<FacebookGroup?> IFacebookService.GetGroupAsync(string groupId)
     {
@@ -53,11 +58,11 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptionsSnaps
             try
             {
                 var cacheKey = $"Group-{groupId}";
-                var group = cache.Get<FacebookGroup>(cacheKey) ?? await _httpClient.GetFromJsonAsync<FacebookGroup>(url);
+                var group = _cache.Get<FacebookGroup>(cacheKey) ?? await _httpClient.GetFromJsonAsync<FacebookGroup>(url);
 
                 if (group is not null)
                 {
-                    cache.Set(cacheKey, group, _cacheOptions);
+                    _cache.Set(cacheKey, group, _cacheOptions);
                 }
 
                 return group;
@@ -83,16 +88,16 @@ public class FacebookService(IHttpClientFactory httpClientFactory, IOptionsSnaps
         try
         {
             var cacheKey = $"Posts-{groupId}";
-            var posts = cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
+            var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
             var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
             var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url);
             var newPosts = (feed?.Data ?? []).Where(p => p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Count() == 0).ToList();
 
             newPosts.AddRange(posts.Where(p => p.Type != "Status"));
 
-            cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
+            _cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
 
-            return cache.Get<IEnumerable<FacebookPost>>(cacheKey)!;
+            return _cache.Get<IEnumerable<FacebookPost>>(cacheKey)!;
         }
         finally
         {
