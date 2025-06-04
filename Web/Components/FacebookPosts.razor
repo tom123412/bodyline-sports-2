@@ -17,7 +17,6 @@ else if (Posts.Count() > 0)
     {
         <article class="p-2 [background:canvas] rounded-xl shadow-md basis-4/5 shadow-black h-min [overflow-wrap:anywhere]">
             <p class="text-xs">@post.UpdatedDateTime.LocalDateTime.ToString(@"dd MMMM \a\t HH:mm")</p>
-            <p class="pt-1">@((MarkupString?)(post.Message?.Replace("\n", "<br />") ?? string.Empty))</p>
             <p class="pt-1 whitespace-pre-wrap">@post.Message</p>
             @if (post.Attachments.Length > 0)
             {
