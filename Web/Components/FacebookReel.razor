@@ -1,8 +1,6 @@
-﻿<iframe src="@ReelEmbedUrl" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" height="400"></iframe>
+﻿<script async defer src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"></script>
 
-<script async defer src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"></script>
-
-<div class="fb-post" data-href="@ReelUrl"></div>
+<div class="fb-post" data-href="@ReelUrl" data-lazy="true" data-show-text="false" data-autoplay="true" data-width="400"></div>
 
 @code {
     private string ReelEmbedUrl => $"https://www.facebook.com/plugins/video.php?href={Uri.EscapeDataString(ReelUrl.AbsoluteUri)}&show_text=false&t=0";
