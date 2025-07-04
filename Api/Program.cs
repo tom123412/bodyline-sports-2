@@ -60,8 +60,6 @@ builder.Services
     .AddHttpMessageHandler<FacebookAuthorisationHeaderHandler>()
     ;
 
-builder.Services.AddAzureAppConfiguration();
-
 builder.Services.AddTransient<FacebookAuthorisationHeaderHandler>();
 builder.Services.AddScoped<IFacebookService, FacebookService>();
 
@@ -87,8 +85,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
-
-app.UseHttpsRedirection();
 
 app.UseCors(builder =>
     builder

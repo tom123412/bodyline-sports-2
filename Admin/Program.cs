@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Azure.Identity;
 using Microsoft.Net.Http.Headers;
 using Admin.Azure;
+using Microsoft.AspNetCore.HttpsPolicy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +84,13 @@ builder.Services
     })
     ;
 
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true; // Allow inclusion in HSTS preload list
+    options.IncludeSubDomains = true; // Apply HSTS to all subdomains
+    options.MaxAge = TimeSpan.FromDays(365); // 1 year max age
+});
+
 var app = builder.Build();
 
 app.UseForwardedHeaders();
@@ -91,7 +99,6 @@ app.UseForwardedHeaders();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
