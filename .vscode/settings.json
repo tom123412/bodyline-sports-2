@@ -19,6 +19,7 @@
         "Msal",
         "nameof",
         "webapps",
-        "wwwroot"
+        "wwwroot",
+        "xfbml"
     ]
 }

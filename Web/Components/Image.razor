@@ -6,7 +6,7 @@
 @inject IOptions<FacebookOptions> options
 
 <div class="[grid-area:image]">
-    <img class="h-full" alt="logo image" referrerpolicy="origin-when-cross-origin" src="@(Group?.Cover.Source ?? options.Value.DefaultLogoUrl)">
+    <img class="h-full" alt="logo image" src="@(Group?.Cover.Source ?? options.Value.DefaultLogoUrl)">
 </div>    
 
 @code {
