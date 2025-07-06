@@ -1,7 +1,5 @@
 ﻿<iframe title="facebook reel" src="@ReelEmbedUrl" allowfullscreen="true" height="500"></iframe>
 
-<div class="fb-video" data-href="https://www.facebook.com/reel/1459011805268639" data-width="500" data-show-text="true"></div>
-
 @code {
     private string ReelEmbedUrl => $"https://www.facebook.com/plugins/video.php?href={Uri.EscapeDataString(ReelUrl!.AbsoluteUri)}&show_text=false&t=0";
 
