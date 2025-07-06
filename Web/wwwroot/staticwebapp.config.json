@@ -2,7 +2,7 @@
     "globalHeaders": {
         "blazor-environment": "Staging",
         "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
-        "content-security-policy": "base-uri 'self'; default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://connect.facebook.net https://cdn.tailwindcss.com ; style-src 'self' https://fonts.googleapis.com/; font-src https://fonts.gstatic.com/; connect-src 'self' https://bodylinesports-api.azurewebsites.net https://bodylinesports-staging-api.azurewebsites.net; img-src 'self' https://*.xx.fbcdn.net; frame-src https://www.facebook.com; object-src 'none'",
+        "content-security-policy": "base-uri 'self'; default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://connect.facebook.net; style-src 'self' https://fonts.googleapis.com/ 'sha256-LJFbRu0EEL6w31kneN6FelHa6EANsGf3tIOGbT2kvZw='; font-src https://fonts.gstatic.com/; connect-src 'self' https://bodylinesports-api.azurewebsites.net https://bodylinesports-staging-api.azurewebsites.net; img-src 'self' https://*.xx.fbcdn.net; frame-src https://www.facebook.com; object-src 'none'",
         "cross-origin-opener-policy": "same-origin"
     }
 }
