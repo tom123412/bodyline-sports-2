@@ -34,15 +34,15 @@ builder.Services.AddMemoryCache();
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
     options
-    .Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential())
-    .ConfigureRefresh(configure =>
-            {
-                const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
-                configure
-                    .Register($"{AccessTokenKey}", refreshAll: true)
-                    .SetRefreshInterval(TimeSpan.FromSeconds(1))
-                    ;
-            })
+        .Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential())
+        .ConfigureRefresh(configure =>
+        {
+            const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+            configure
+                .Register($"{AccessTokenKey}", refreshAll: true)
+                .SetRefreshInterval(TimeSpan.FromSeconds(1))
+                ;
+        })
         ;
 });
 

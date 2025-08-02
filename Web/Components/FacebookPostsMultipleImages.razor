@@ -28,7 +28,7 @@
         var attachment = SubAttachments[i];
         var elClass = colsToSpan[(i, numberOfImages)];
         <a class="@(elClass)" href="@(attachment.Image.Src)" target="_blank">
-            <img alt="@(attachment.Title)" src="@(attachment.Image.Src)" class="mx-auto" />
+            <img alt="@(attachment.Title)" src="@(attachment.Image.Src)" class="mx-auto" loading="lazy" />
         </a>
     }
 </div>

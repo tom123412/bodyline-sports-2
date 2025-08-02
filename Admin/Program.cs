@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Azure.Identity;
 using Microsoft.Net.Http.Headers;
 using Admin.Azure;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,9 +77,10 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services
-    .AddHttpClient("Facebook", (httpClient) =>
+    .AddHttpClient("Facebook", (sp, httpClient) =>
     {
-        httpClient.BaseAddress = new Uri("https://graph.facebook.com/v22.0/");
+        var facebookOptions = sp.GetRequiredService<IOptions<FacebookOptions>>().Value;
+        httpClient.BaseAddress = new Uri(facebookOptions.GraphUri);
         httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
     })
     ;
