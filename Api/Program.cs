@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Claims;
 using Api.Azure;
+using Api.BackgroundServices;
 using Api.Facebook;
 using Api.Facebook.Model;
 using Asp.Versioning;
@@ -19,8 +20,6 @@ using FacebookOptions = Api.Facebook.FacebookOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
@@ -38,6 +37,8 @@ builder.Services
 builder.Services.AddHealthChecks();
 
 builder.Services.AddMemoryCache();
+
+builder.Services.AddHostedService<FortnightlyBackgroundService>();
 
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
