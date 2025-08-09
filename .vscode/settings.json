@@ -2,6 +2,7 @@
     "appService.defaultWebAppToDeploy": "",
     "appService.deploySubpath": "Api\\bin\\Publish",
     "cSpell.words": [
+        "accesstoken",
         "allowfullscreen",
         "Antiforgery",
         "appservice",
