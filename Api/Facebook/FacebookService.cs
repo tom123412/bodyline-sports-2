@@ -10,6 +10,7 @@ public interface IFacebookService
     public Task<FacebookGroup?> GetGroupAsync(string groupId);
     public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId);
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken);
+    public Task<string> RefreshAccessTokenAsync(string accessToken);
 }
 
 public class FacebookService: IFacebookService
@@ -110,5 +111,10 @@ public class FacebookService: IFacebookService
         var url = $"/debug_token?input_token={_options.AccessToken}&access_token={userAccessToken}";
         var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookTokenDetails>(url);
         return tokenDetails!;
+    }
+
+    Task<string> IFacebookService.RefreshAccessTokenAsync(string accessToken)
+    {
+        throw new NotImplementedException();
     }
 }
