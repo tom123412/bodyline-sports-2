@@ -56,6 +56,7 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 });
 
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
+builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection(key: nameof(AzureOptions)));
 
 builder.Services.AddCors();
 
