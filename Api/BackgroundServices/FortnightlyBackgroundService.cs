@@ -42,11 +42,12 @@ public class FortnightlyBackgroundService(ILogger<FortnightlyBackgroundService> 
 
         var newAccessToken = await facebookService.RefreshAccessTokenAsync(options.CurrentValue.AccessToken);
         await azureService.SaveConfigurationSettingsAsync($"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}", newAccessToken);
-        logger.LogInformation("access token lifetime extended till {expiry}", (await facebookService.GetLongLivedTokenDetailsAsync(newAccessToken)).Data.ExpiresAt);
+        logger.LogInformation("access token lifetime extended till {expiry:o}", (await facebookService.GetLongLivedTokenDetailsAsync(newAccessToken)).Data.ExpiresAt);
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
+        var now = DateTimeOffset.Now;
         await base.StartAsync(cancellationToken);
     }
 
