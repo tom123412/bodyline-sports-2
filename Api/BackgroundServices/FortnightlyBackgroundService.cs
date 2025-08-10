@@ -30,7 +30,7 @@ public class FortnightlyBackgroundService(ILogger<FortnightlyBackgroundService> 
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred in the fortnightly background task.");
-            throw;
+            //don't throw as it causes the whole app to shut down
         }
     }
 

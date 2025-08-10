@@ -113,8 +113,10 @@ public class FacebookService: IFacebookService
         return tokenDetails!;
     }
 
-    Task<string> IFacebookService.RefreshAccessTokenAsync(string accessToken)
+    async Task<string> IFacebookService.RefreshAccessTokenAsync(string accessToken)
     {
-        throw new NotImplementedException();
+        var url = $"oauth/access_token?grant_type=fb_exchange_token&client_id={_options.AppId}&client_secret={_options.AppSecret}&fb_exchange_token={accessToken}";
+        var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookRefreshedTokenDetails>(url);
+        return tokenDetails!.AccessToken;
     }
 }
