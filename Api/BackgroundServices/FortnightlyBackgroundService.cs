@@ -4,7 +4,11 @@ using Microsoft.Extensions.Options;
 
 namespace Api.BackgroundServices;
 
-public class FortnightlyBackgroundService(ILogger<FortnightlyBackgroundService> logger, IOptionsMonitor<FacebookOptions> options, IServiceScopeFactory serviceScopeFactory) : BackgroundService
+public class FortnightlyBackgroundService(
+    ILogger<FortnightlyBackgroundService> logger,
+    IOptionsMonitor<FacebookOptions> options,
+    IOptionsMonitor<BackgroundServiceOptions> backgroundOptions,
+    IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
     private readonly TimeSpan _delay = TimeSpan.FromDays(14); // Run every fortnight
 
@@ -38,11 +42,27 @@ public class FortnightlyBackgroundService(ILogger<FortnightlyBackgroundService> 
     {
         using var scope = serviceScopeFactory.CreateScope();
         var facebookService = scope.ServiceProvider.GetRequiredService<IFacebookService>();
-        var azureService = scope.ServiceProvider.GetRequiredService<IAzureService>();
 
-        var newAccessToken = await facebookService.RefreshAccessTokenAsync(options.CurrentValue.AccessToken);
-        await azureService.SaveConfigurationSettingsAsync($"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}", newAccessToken);
-        logger.LogInformation("access token lifetime extended till {expiry:o}", (await facebookService.GetLongLivedTokenDetailsAsync(newAccessToken)).Data.ExpiresAt);
+        var tokenDetails = await facebookService.GetLongLivedTokenDetailsAsync(options.CurrentValue.AccessToken);
+        var expiresAt = tokenDetails.Data.ExpiresAt;
+        var timeUntilExpiration = expiresAt - DateTimeOffset.UtcNow;
+        var refreshThreshold = TimeSpan.FromDays(backgroundOptions.CurrentValue.TokenRefreshThresholdDays);
+
+        if (timeUntilExpiration <= refreshThreshold)
+        {
+            logger.LogInformation("Token will expire in {ExpiresIn}. Refreshing token...", timeUntilExpiration);
+            var newAccessToken = await facebookService.RefreshAccessTokenAsync(options.CurrentValue.AccessToken);
+
+            var azureService = scope.ServiceProvider.GetRequiredService<IAzureService>();
+            await azureService.SaveConfigurationSettingsAsync($"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}", newAccessToken);
+
+            var newTokenDetails = await facebookService.GetLongLivedTokenDetailsAsync(newAccessToken);
+            logger.LogInformation("Access token lifetime extended till {expiry:o}", newTokenDetails.Data.ExpiresAt);
+        }
+        else
+        {
+            logger.LogInformation("Token is still valid for {TimeRemaining}. No update needed.", timeUntilExpiration);
+        }
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
