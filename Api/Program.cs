@@ -65,9 +65,9 @@ builder.Configuration.AddAzureAppConfiguration(options =>
         ;
 });
 
-builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection("Facebook"));
-builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
-builder.Services.Configure<BackgroundServiceOptions>(builder.Configuration.GetSection("BackgroundService"));
+builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(nameof(FacebookOptions)));
+builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection(nameof(AzureOptions)));
+builder.Services.Configure<BackgroundServiceOptions>(builder.Configuration.GetSection(nameof(BackgroundServiceOptions)));
 
 builder.Services.AddCors();
 
