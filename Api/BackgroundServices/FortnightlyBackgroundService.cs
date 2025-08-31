@@ -6,7 +6,7 @@ namespace Api.BackgroundServices;
 
 public class FortnightlyBackgroundService(
     ILogger<FortnightlyBackgroundService> logger,
-    IOptionsMonitor<FacebookOptions> options,
+    IOptionsMonitor<FacebookOptions> facebookOptions,
     IOptionsMonitor<BackgroundServiceOptions> backgroundOptions,
     IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
@@ -43,9 +43,10 @@ public class FortnightlyBackgroundService(
         using var scope = serviceScopeFactory.CreateScope();
         var facebookService = scope.ServiceProvider.GetRequiredService<IFacebookService>();
 
-        logger.LogDebug("AppId is {appId}", options.CurrentValue.AppId);
-        logger.LogDebug("Checking Facebook access token expiry {token}...", options.CurrentValue.AccessToken[..10]);
-        var tokenDetails = await facebookService.GetLongLivedTokenDetailsAsync(options.CurrentValue.AccessToken);
+        logger.LogDebug("Token refresh threshold is {threshold} days", backgroundOptions.CurrentValue.TokenRefreshThresholdDays);
+        logger.LogDebug("AppId is {appId}", facebookOptions.CurrentValue.AppId);
+        logger.LogDebug("Checking Facebook access token expiry {token}...", facebookOptions.CurrentValue.AccessToken[..10]);
+        var tokenDetails = await facebookService.GetLongLivedTokenDetailsAsync(facebookOptions.CurrentValue.AccessToken);
         var expiresAt = tokenDetails.Data.ExpiresAt;
         var timeUntilExpiration = expiresAt - DateTimeOffset.UtcNow;
         var refreshThreshold = TimeSpan.FromDays(backgroundOptions.CurrentValue.TokenRefreshThresholdDays);
@@ -53,7 +54,7 @@ public class FortnightlyBackgroundService(
         if (timeUntilExpiration <= refreshThreshold)
         {
             logger.LogInformation("Token will expire in {ExpiresIn}. Refreshing token...", timeUntilExpiration);
-            var newAccessToken = await facebookService.RefreshAccessTokenAsync(options.CurrentValue.AccessToken);
+            var newAccessToken = await facebookService.RefreshAccessTokenAsync(facebookOptions.CurrentValue.AccessToken);
 
             var azureService = scope.ServiceProvider.GetRequiredService<IAzureService>();
             await azureService.SaveConfigurationSettingsAsync($"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}", newAccessToken);
