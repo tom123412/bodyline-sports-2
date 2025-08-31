@@ -43,9 +43,6 @@ public class FortnightlyBackgroundService(
         using var scope = serviceScopeFactory.CreateScope();
         var facebookService = scope.ServiceProvider.GetRequiredService<IFacebookService>();
 
-        logger.LogDebug("Token refresh threshold is {threshold} days", backgroundOptions.CurrentValue.TokenRefreshThresholdDays);
-        logger.LogDebug("AppId is {appId}", facebookOptions.CurrentValue.AppId);
-        logger.LogDebug("Checking Facebook access token expiry {token}...", facebookOptions.CurrentValue.AccessToken[..10]);
         var tokenDetails = await facebookService.GetLongLivedTokenDetailsAsync(facebookOptions.CurrentValue.AccessToken);
         var expiresAt = tokenDetails.Data.ExpiresAt;
         var timeUntilExpiration = expiresAt - DateTimeOffset.UtcNow;

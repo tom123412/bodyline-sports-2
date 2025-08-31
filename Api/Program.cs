@@ -42,11 +42,11 @@ builder.Services.AddHostedService<FortnightlyBackgroundService>();
 
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
-    var connectionString = builder.Configuration["AzureOptions:AppConfigurationConnectionString"];
+    var connectionString = builder.Configuration[$"{nameof(AzureOptions)}:{nameof(AzureOptions.AppConfigurationConnectionString)}"];
 
     if (string.IsNullOrWhiteSpace(connectionString))
     {
-        options.Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential());
+        options.Connect(new Uri(builder.Configuration[$"{nameof(AzureOptions)}:{nameof(AzureOptions.AppConfigurationEndpoint)}"]!), new DefaultAzureCredential());
     }
     else
     {
