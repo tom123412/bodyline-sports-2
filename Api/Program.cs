@@ -42,8 +42,18 @@ builder.Services.AddHostedService<FortnightlyBackgroundService>();
 
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
+    var connectionString = builder.Configuration["AzureOptions:AppConfigurationConnectionString"];
+
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        options.Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential());
+    }
+    else
+    {
+        options.Connect(connectionString);
+    }
+
     options
-        .Connect(new Uri(builder.Configuration["AzureOptions:AppConfigurationEndpoint"]!), new DefaultAzureCredential())
         .ConfigureRefresh(configure =>
         {
             const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
