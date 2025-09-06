@@ -1,31 +1,12 @@
 using System.Net.Http.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace Web.Facebook;
 
-public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> options)
+public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> options, IMemoryCache cache)
 {
     private readonly FacebookOptions _options = options.Value;
-
-    public async Task<WeatherForecast[]> GetWeatherAsync(int maxItems = 10, CancellationToken cancellationToken = default)
-    {
-        List<WeatherForecast>? forecasts = null;
-
-        await foreach (var forecast in httpClient.GetFromJsonAsAsyncEnumerable<WeatherForecast>("/weatherforecast", cancellationToken))
-        {
-            if (forecasts?.Count >= maxItems)
-            {
-                break;
-            }
-            if (forecast is not null)
-            {
-                forecasts ??= [];
-                forecasts.Add(forecast);
-            }
-        }
-
-        return forecasts?.ToArray() ?? [];
-    }
 
     public async Task<FacebookGroup?> GetGroup(CancellationToken cancellationToken = default)
     {
@@ -36,12 +17,18 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
 
     public async Task<IEnumerable<FacebookPost>> GetPostsForGroup(CancellationToken cancellationToken = default)
     {
-        var posts = await httpClient.GetFromJsonAsync<IEnumerable<FacebookPost>>($"/api/facebook/groups/{_options.GroupId}/posts", cancellationToken: cancellationToken);
-        return posts ?? [];
-    }
-}
+        const string PostsCacheKey = "FacebookPosts";
+        var CacheDuration = TimeSpan.FromMinutes(5);
 
-public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        return (await cache.GetOrCreateAsync(PostsCacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = CacheDuration;
+
+            var posts = await httpClient.GetFromJsonAsync<IEnumerable<FacebookPost>>(
+                $"/api/facebook/groups/{_options.GroupId}/posts",
+                cancellationToken: cancellationToken);
+
+            return posts ?? [];
+        })) ?? [];
+    }
 }

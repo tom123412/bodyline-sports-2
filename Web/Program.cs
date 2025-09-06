@@ -31,6 +31,7 @@ builder.Services.AddMsalAuthentication(options =>
 });
 
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddMemoryCache();
 
 await builder.Build().RunAsync();
 
