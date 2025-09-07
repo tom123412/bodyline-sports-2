@@ -9,6 +9,7 @@ public interface IFacebookService
 {
     public Task<FacebookGroup?> GetGroupAsync(string groupId);
     public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId);
+    public Task<IEnumerable<FacebookPost>> GetPostsForPageAsync(string groupId);
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken);
     public Task<string> RefreshAccessTokenAsync(string accessToken);
 }
@@ -104,6 +105,16 @@ public class FacebookService: IFacebookService
         {
             PostsLock.Release();
         }
+    }
+
+    async Task<IEnumerable<FacebookPost>> IFacebookService.GetPostsForPageAsync(string pageId)
+    {
+        var oneMonthAgo = DateTimeOffset.UtcNow.AddMonths(-1);
+        var url = $"/{pageId}/feed?fields=attachments,message,message_tags,updated_time&since={oneMonthAgo.ToString("s")}";
+        var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url);
+        var newPosts = (feed?.Data ?? []).Where(p => p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Count() == 0).ToList();
+
+        return newPosts;
     }
 
     async Task<FacebookTokenDetails> IFacebookService.GetLongLivedTokenDetailsAsync(string userAccessToken)

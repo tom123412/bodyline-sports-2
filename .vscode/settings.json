@@ -6,6 +6,7 @@
         "allowfullscreen",
         "Antiforgery",
         "appservice",
+        "appsettings",
         "ASPNETCORE",
         "Authorisation",
         "autoplay",

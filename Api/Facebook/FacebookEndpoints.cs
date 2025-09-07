@@ -45,5 +45,11 @@ public static class FacebookEndpoints
             var tokenDetails = await service.GetLongLivedTokenDetailsAsync(userAccessToken);
             return TypedResults.Ok(tokenDetails.ToDto());
         });
+
+        apiGroup.MapGet("/pages/{id}/posts", async (string id, [FromServices] IFacebookService service) =>
+        {
+            var posts = await service.GetPostsForPageAsync(id);
+            return TypedResults.Ok(posts.Select(p => p.ToDto()));
+        });
     }
 }
