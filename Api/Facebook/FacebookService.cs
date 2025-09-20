@@ -32,6 +32,8 @@ public class FacebookService: IFacebookService
         public required FacebookPost[] Data { get; set; }
     }
 
+    record FacebookCodeDetails(string Code);
+
     private static readonly SemaphoreSlim GroupLock = new(1, 1);
     private static readonly SemaphoreSlim PostsLock = new(1, 1);
     private readonly HttpClient _httpClient;
@@ -126,8 +128,12 @@ public class FacebookService: IFacebookService
 
     async Task<string> IFacebookService.RefreshAccessTokenAsync(string accessToken)
     {
-        var url = $"oauth/access_token?grant_type=fb_exchange_token&client_id={_options.AppId}&client_secret={_options.AppSecret}&fb_exchange_token={accessToken}";
-        var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookRefreshedTokenDetails>(url);
-        return tokenDetails!.AccessToken;
+        //var url = $"oauth/access_token?grant_type=fb_exchange_token&client_id={_options.AppId}&client_secret={_options.AppSecret}&fb_exchange_token={accessToken}";
+        //var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookRefreshedTokenDetails>(url);
+        var codeUrl = $"oauth/client_code?client_id={_options.AppId}&client_secret={_options.AppSecret}&access_token={accessToken}";
+        var code = (await _httpClient.GetFromJsonAsync<FacebookCodeDetails>(codeUrl))!.Code;
+        var accessTokenUrl = $"oauth/access_token?code={code}&client_id={_options.AppId}";
+        var newAccessToken = (await _httpClient.GetFromJsonAsync<FacebookRefreshedTokenDetails>(accessTokenUrl))!.AccessToken;
+        return newAccessToken;
     }
 }
