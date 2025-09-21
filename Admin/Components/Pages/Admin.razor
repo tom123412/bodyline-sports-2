@@ -24,6 +24,8 @@
 <AuthorizeView Context="authContext" Policy="Admin">
     <Authorized>
         <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a>
+        <label>Facebook Access Token</label>
+        <input type="password" readonly class="w-full p-2 border border-gray-300 rounded" value="@UserAccessToken" />
         <p>Token will expire on @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss tt ")</p>
     </Authorized>
     <NotAuthorized>
@@ -66,7 +68,7 @@
             {
                 client = new ConfigurationClient(azureOptions.Value.AppConfigurationConnectionString);
             }
-            await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
+            //await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
         }
         
         await base.OnInitializedAsync();
