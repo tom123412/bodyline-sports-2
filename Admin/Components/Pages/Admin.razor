@@ -12,6 +12,8 @@
 @using global::Azure.Data.AppConfiguration
 @using global::Azure.Identity
 
+@rendermode InteractiveServer
+
 @inject IOptions<FacebookOptions> facebookOptions
 @inject IHttpContextAccessor httpContextAccessor
 @inject IHttpClientFactory httpClientFactory
@@ -24,9 +26,10 @@
 <AuthorizeView Context="authContext" Policy="Admin">
     <Authorized>
         <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a>
-        <label>Facebook Access Token</label>
-        <input type="password" readonly class="w-full p-2 border border-gray-300 rounded" value="@UserAccessToken" />
-        <p>Token will expire on @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss tt ")</p>
+        <label class="block">Facebook Access Token</label>
+        <input type="password" class="w-full p-2 border border-gray-300 rounded" value="@UserAccessToken" />
+        <p class="mt-4">Token will expire on @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss tt ")</p>
+        <button type="button" @onclick="SaveToken" @onchange="UpdateExpiry">Save</button>
     </Authorized>
     <NotAuthorized>
     </NotAuthorized>
@@ -53,22 +56,7 @@
     {
         if (UserAccessToken is not null)
         {
-            const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
-
-            //var userAccessToken = await SwapForLongLivedTokenAsync();
-
             TokenData = (await GetTokenDetailsAsync(UserAccessToken)).Data;
-
-            ConfigurationClient client;
-            if (string.IsNullOrWhiteSpace(azureOptions.Value.AppConfigurationConnectionString))
-            {
-                client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
-            }
-            else
-            {
-                client = new ConfigurationClient(azureOptions.Value.AppConfigurationConnectionString);
-            }
-            //await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
         }
         
         await base.OnInitializedAsync();
@@ -106,5 +94,26 @@
         var token = await httpClient.GetFromJsonAsync<FacebookAccessToken>(tokenUrl);
 
         return token!.AccessToken;
+    }
+
+    private async Task SaveToken()
+    {
+        const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+ 
+        ConfigurationClient client;
+        if (string.IsNullOrWhiteSpace(azureOptions.Value.AppConfigurationConnectionString))
+        {
+            client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
+        }
+        else
+        {
+            client = new ConfigurationClient(azureOptions.Value.AppConfigurationConnectionString);
+        }
+        await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
+    }
+
+    private async Task UpdateExpiry()
+    {
+        TokenData = (await GetTokenDetailsAsync(UserAccessToken ?? string.Empty)).Data;
     }
 }

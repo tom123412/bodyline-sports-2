@@ -15,4 +15,9 @@
     <PackageReference Include="System.Text.Json" Version="9.0.5" />
   </ItemGroup>
 
+  <Target Name="Tailwind" BeforeTargets="Build">
+    <Exec Command="npm install tailwindcss" />
+    <Exec Command="npx --yes @tailwindcss/cli -i ./wwwroot/css/tailwind.css -o ./wwwroot/css/app.css --minify --map" />
+  </Target>
+
 </Project>
