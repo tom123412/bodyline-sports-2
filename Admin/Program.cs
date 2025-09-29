@@ -1,15 +1,28 @@
+using System.Security.Claims;
+using Admin.Azure;
+using Admin.Components;
+using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Facebook;
-using System.Security.Claims;
-using Admin.Components;
-using FacebookOptions = Admin.Facebook.FacebookOptions;
 using Microsoft.AspNetCore.HttpOverrides;
-using Azure.Identity;
-using Microsoft.Net.Http.Headers;
-using Admin.Azure;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
+using OpenTelemetry.Metrics;
+using FacebookOptions = Admin.Facebook.FacebookOptions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            ;
+    })
+    .UseAzureMonitor();
 
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
@@ -37,7 +50,6 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
 builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection(key: nameof(AzureOptions)));
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
