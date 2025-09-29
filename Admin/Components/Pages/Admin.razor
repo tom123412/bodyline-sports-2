@@ -15,9 +15,10 @@
 @rendermode InteractiveServer
 
 @inject IOptions<FacebookOptions> facebookOptions
+@inject IOptions<AzureOptions> azureOptions
 @inject IHttpContextAccessor httpContextAccessor
 @inject IHttpClientFactory httpClientFactory
-@inject IOptions<AzureOptions> azureOptions
+@inject ILogger<Admin> logger
     
 @attribute [Authorize(Policy = "Admin")]
 
@@ -27,7 +28,7 @@
     <Authorized>
         <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a>
         <label class="block">Facebook Access Token</label>
-        <input type="password" class="w-full p-2 border border-gray-300 rounded" value="@UserAccessToken" @onchange="UpdateExpiry"/>
+        <input type="password" class="w-full p-2 border border-gray-300 rounded" value="@UserAccessToken" @oninput="UpdateExpiry"/>
         <p class="mt-4">Token will expire on @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss tt ")</p>
         <button type="button" @onclick="SaveToken">Save</button>
     </Authorized>
@@ -71,6 +72,8 @@
             UserAccessToken = userAccessToken!;
         }
 
+        logger.LogInformation("Facebook Access Token: {Token} in {RenderMode}", UserAccessToken?.Substring(0, 10) ?? "Not Set", RendererInfo.Name);
+
         base.OnInitialized();
     }
     
@@ -82,20 +85,6 @@
         return tokenDetails!;
     }
     
-    private async Task<string> SwapForLongLivedTokenAsync()
-    {
-        var request = httpContextAccessor.HttpContext!.Request;
-        var redirectUri = $"{request.Scheme}://{request.Host}/signin-facebook";
-        var codeUrl = $"/oauth/client_code?client_id={facebookOptions.Value.AppId}&client_secret={facebookOptions.Value.AppSecret}&redirect_uri={redirectUri}&access_token={facebookOptions.Value.AccessToken}";
-        var httpClient = httpClientFactory.CreateClient("Facebook");
-        var code = await httpClient.GetFromJsonAsync<FacebookCode>(codeUrl);
-
-        var tokenUrl = $"/oauth/access_token?client_id={facebookOptions.Value.AppId}&redirect_uri={redirectUri}&code={code!.Code}";    
-        var token = await httpClient.GetFromJsonAsync<FacebookAccessToken>(tokenUrl);
-
-        return token!.AccessToken;
-    }
-
     private async Task SaveToken()
     {
         const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
