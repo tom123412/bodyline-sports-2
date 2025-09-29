@@ -27,9 +27,9 @@
     <Authorized>
         <a class="flex justify-end pr-2" href="/Account/SignOut">Hello, @authContext.User.Identity?.Name!</a>
         <label class="block">Facebook Access Token</label>
-        <input type="password" class="w-full p-2 border border-gray-300 rounded" value="@UserAccessToken" />
+        <input type="password" class="w-full p-2 border border-gray-300 rounded" value="@UserAccessToken" @onchange="UpdateExpiry"/>
         <p class="mt-4">Token will expire on @TokenData?.ExpiresAt.ToString("dd MMM yy hh:mm:ss tt ")</p>
-        <button type="button" @onclick="SaveToken" @onchange="UpdateExpiry">Save</button>
+        <button type="button" @onclick="SaveToken">Save</button>
     </Authorized>
     <NotAuthorized>
     </NotAuthorized>
