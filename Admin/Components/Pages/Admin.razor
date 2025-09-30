@@ -65,6 +65,8 @@
 
     protected override void OnInitialized()
     {
+        logger.LogInformation("User is {Authenticated} in {RenderMode}", httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated, RendererInfo.Name);
+
         if (httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false)
         {
             var authFeatures = httpContextAccessor.HttpContext?.Features.Get<IAuthenticateResultFeature>();

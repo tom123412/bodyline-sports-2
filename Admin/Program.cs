@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OpenTelemetry.Metrics;
+using Microsoft.AspNetCore.StaticFiles;
 using FacebookOptions = Admin.Facebook.FacebookOptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -104,6 +105,8 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromDays(365); // 1 year max age
 });
 
+builder.Services.AddDirectoryBrowser();
+
 var app = builder.Build();
 
 app.UseForwardedHeaders();
@@ -116,6 +119,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ServeUnknownFileTypes = true,
+    DefaultContentType = "application/octet-stream"
+});
+
+app.UseDirectoryBrowser(new DirectoryBrowserOptions
+{
+    FileProvider = app.Environment.WebRootFileProvider,
+    RequestPath = "/wwwroot"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
