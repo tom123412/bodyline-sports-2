@@ -53,8 +53,18 @@
     private string? UserAccessToken { get; set; }
     private TokenData? TokenData { get; set; }
 
+    [CascadingParameter]
+    public required Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
     protected async override Task OnInitializedAsync()
     {
+        if (UserAccessToken is null)
+        {
+            var authState = await AuthenticationStateTask;
+            var userAccessToken = authState.User.FindFirst("FacebookAccessToken")?.Value;
+            UserAccessToken = userAccessToken!;
+        }
+
         if (UserAccessToken is not null)
         {
             TokenData = (await GetTokenDetailsAsync(UserAccessToken)).Data;
@@ -65,16 +75,12 @@
 
     protected override void OnInitialized()
     {
-        logger.LogInformation("User is {Authenticated} in {RenderMode}", httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated, RendererInfo.Name);
-
         if (httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false)
         {
             var authFeatures = httpContextAccessor.HttpContext?.Features.Get<IAuthenticateResultFeature>();
             var userAccessToken = authFeatures!.AuthenticateResult!.Properties!.GetTokenValue("access_token");
             UserAccessToken = userAccessToken!;
         }
-
-        logger.LogInformation("Facebook Access Token: {Token} in {RenderMode}", UserAccessToken?.Substring(0, 10) ?? "Not Set", RendererInfo.Name);
 
         base.OnInitialized();
     }

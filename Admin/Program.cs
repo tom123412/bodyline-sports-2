@@ -51,7 +51,8 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 builder.Services.Configure<FacebookOptions>(builder.Configuration.GetSection(key: nameof(FacebookOptions)));
 builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection(key: nameof(AzureOptions)));
 
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddHttpContextAccessor();
@@ -80,6 +81,18 @@ builder.Services
         options.AppId = builder.Configuration["FacebookOptions:AppId"] ?? options.AppId;
         options.AppSecret = builder.Configuration["FacebookOptions:AppSecret"] ?? options.AppSecret;
         options.SaveTokens = true;
+
+        options.Events.OnCreatingTicket = context =>
+        {
+            // Get the access token and store it in a claim
+            var accessToken = context.AccessToken;
+            if (accessToken is not null)
+            {
+                context.Identity?.AddClaim(new Claim("FacebookAccessToken", accessToken));
+            }
+
+            return Task.CompletedTask;
+        };
     });
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -120,17 +133,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    ServeUnknownFileTypes = true,
-    DefaultContentType = "application/octet-stream"
-});
-
-app.UseDirectoryBrowser(new DirectoryBrowserOptions
-{
-    FileProvider = app.Environment.WebRootFileProvider,
-    RequestPath = "/wwwroot"
-});
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
