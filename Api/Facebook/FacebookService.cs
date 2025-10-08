@@ -93,11 +93,7 @@ public class FacebookService: IFacebookService
         {
             var cacheKey = $"Posts-{groupId}";
             var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
-            var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&limit={ _options.PostsToLoad}";
-            if (posts.Count != 0)
-            {
-                url += $"&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}";
-            }
+            var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
             var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url);
             var newPosts = (feed?.Data ?? []).Where(p => p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Count() == 0).ToList();
 
