@@ -19,7 +19,7 @@ public static class FacebookEndpoints
         var apiGroup = app
             .MapGroup("api/facebook")
             .WithApiVersionSet(apiVersionSet)
-            .WithOpenApi();
+            ;
 
         apiGroup.MapGet("/groups/{id}", async Task<Results<Ok<FacebookGroupDto>, NotFound>> (string id, [FromServices] IFacebookService service) =>
         {

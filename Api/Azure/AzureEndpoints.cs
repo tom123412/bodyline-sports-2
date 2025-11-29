@@ -19,7 +19,7 @@ public static class AzureEndpoints
         var apiGroup = app
             .MapGroup("api/azure")
             .WithApiVersionSet(apiVersionSet)
-            .WithOpenApi();
+            ;
 
         apiGroup
             .MapPut("/accesstoken", Task<NoContent> ([FromServices] IHttpContextAccessor httpContextAccessor, [FromServices] IAzureService service) =>
