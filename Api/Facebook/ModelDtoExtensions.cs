@@ -5,34 +5,52 @@ namespace Api.Facebook;
 
 public static class ModelDtoExtensions
 {
-    public static FacebookTokenDetailsDto ToDto(this FacebookTokenDetails model)
+    extension(FacebookTokenDetails model)
     {
-        return new FacebookTokenDetailsDto(model.Data.IsValid, model.Data.ExpiresAt);
+        public FacebookTokenDetailsDto ToDto()        
+        {
+            return new FacebookTokenDetailsDto(model.Data.IsValid, model.Data.ExpiresAt);
+        }
     }
 
-    public static FacebookGroupDto ToDto(this FacebookGroup model)
+    extension(FacebookGroup model)
     {
-        return new FacebookGroupDto(model.Id, model.Description, new FacebookPhotoDto(model.Cover.Source));
+        public FacebookGroupDto ToDto()
+        {
+            return new FacebookGroupDto(model.Id, model.Description, new FacebookPhotoDto(model.Cover.Source));
+        }
     }
 
-    public static FacebookPostDto ToDto(this FacebookPost model)
+    extension(FacebookPost model)
     {
-        return new FacebookPostDto(model.Id, model.Message, model.UpdatedDateTime, model.Type, 
-            model.Attachments?.ToDto() ?? [], [.. model.Tags.Select(t => new FacebookTagDto(t.Name))]);
+        public FacebookPostDto ToDto()
+        {
+            return new FacebookPostDto(model.Id, model.Message, model.UpdatedDateTime, model.Type,
+                model.Attachments?.ToDto() ?? [], [.. model.Tags.Select(t => new FacebookTagDto(t.Name))]);
+        }
     }
 
-    public static FacebookAttachmentDto[] ToDto(this FacebookAttachments model)
+    extension(FacebookAttachments model)
     {
-        return [.. model.Data.Where(a => a.Media is not null).Select(a => new FacebookAttachmentDto(a.Media!.Image.ToDto(), a.SubAttachments?.ToDto() ?? [], a.Title))];
-    }    
+        public FacebookAttachmentDto[] ToDto()
+        {
+            return [.. model.Data.Where(a => a.Media is not null).Select(a => new FacebookAttachmentDto(a.Media!.Image.ToDto(), a.SubAttachments?.ToDto() ?? [], a.Title))];
+        }
+    }
 
-    public static FacebookSubAttachmentDto[] ToDto(this FacebookSubAttachments model)
+    extension(FacebookSubAttachments model)
     {
-        return [.. model.Data.Select(a => new FacebookSubAttachmentDto(a.Media.Image.ToDto(), a.Description))];
-    }    
+        public FacebookSubAttachmentDto[] ToDto()
+        {
+            return [.. model.Data.Select(a => new FacebookSubAttachmentDto(a.Media.Image.ToDto(), a.Description))];
+        }
+    }
 
-    public static FacebookImageDto ToDto(this FacebookImage model)
+    extension(FacebookImage model)
     {
-        return new FacebookImageDto(model.Height, model.Width, model.Src);
-    }    
+        public FacebookImageDto ToDto()
+        {
+            return new FacebookImageDto(model.Height, model.Width, model.Src);
+        }
+    }
 }
