@@ -64,8 +64,8 @@ builder.Services
     .AddPolicy("Admin", policy => policy.RequireAssertion(context =>
         {
             var admins = builder.Configuration.Get<AppSettings>()?.FacebookOptions.Administrators ?? [];
-            var id = context.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            return admins.Contains(id?.Value);
+            var email = context.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Email);
+            return admins.Contains(email?.Value);
         }));
 
 builder.Services
