@@ -67,7 +67,7 @@
 
         if (UserAccessToken is not null)
         {
-            TokenData = (await GetTokenDetailsAsync(UserAccessToken)).Data;
+            await UpdateExpiry();
         }
         
         await base.OnInitializedAsync();
@@ -87,8 +87,8 @@
     
     private async Task<TokenDetails> GetTokenDetailsAsync(string token)
     {
-        var url = $"/debug_token?input_token={token}&access_token={UserAccessToken}";
-        var httpClient = httpClientFactory.CreateClient("Facebook");
+        var url = $"/tokens/{token}/details";
+        var httpClient = httpClientFactory.CreateClient("Api");
         var tokenDetails = await httpClient.GetFromJsonAsync<TokenDetails>(url);
         return tokenDetails!;
     }

@@ -102,14 +102,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         | ForwardedHeaders.XForwardedHost;
 });
 
-builder.Services
-    .AddHttpClient("Facebook", (sp, httpClient) =>
-    {
-        var facebookOptions = sp.GetRequiredService<IOptions<FacebookOptions>>().Value;
-        httpClient.BaseAddress = new Uri(facebookOptions.GraphUri);
-        httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-    })
-    ;
+builder.Services.AddHttpClient("Facebook", (sp, httpClient) =>
+{
+    var facebookOptions = sp.GetRequiredService<IOptions<FacebookOptions>>().Value;
+    httpClient.BaseAddress = new Uri(facebookOptions.GraphUri);
+    httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+});
+
+builder.Services.AddHttpClient("Api", (sp, httpClient) =>
+{
+    httpClient.BaseAddress = new(builder.Configuration.GetValue<string>("ApiUrl") ?? "https://localhost:1234/");    
+});
 
 builder.Services.AddHsts(options =>
 {

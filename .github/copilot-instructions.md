@@ -15,7 +15,6 @@
   - Components/: Reusable components
   - Layout/: Layout components
   - Facebook/: Facebook integration components
-- Implement memory caching for Facebook API responses
 - Use dependency injection consistently
 
 ### API Project

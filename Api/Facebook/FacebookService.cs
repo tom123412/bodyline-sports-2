@@ -13,6 +13,7 @@ public interface IFacebookService
     public IAsyncEnumerable<FacebookPost> GetPostsForGroupAsync2(string groupId, CancellationToken ct);
     public Task<IEnumerable<FacebookPost>> GetPostsForPageAsync(string groupId, CancellationToken ct);
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken, CancellationToken ct);
+    public Task<FacebookTokenDetails> GetTokenDetailsAsync(string token, CancellationToken ct);
     public Task<string> RefreshAccessTokenAsync(string accessToken, CancellationToken ct);
 }
 
@@ -153,5 +154,12 @@ public class FacebookService: IFacebookService
             yield return post;
             latestPostDate = post.UpdatedDateTime;
         }
+    }
+
+    async Task<FacebookTokenDetails> IFacebookService.GetTokenDetailsAsync(string token, CancellationToken ct)
+    {
+        var url = $"/debug_token?input_token={token}&access_token={_options.AccessToken}";
+        var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookTokenDetails>(url, ct);
+        return tokenDetails!;
     }
 }
