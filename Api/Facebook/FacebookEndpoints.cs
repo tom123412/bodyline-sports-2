@@ -48,7 +48,7 @@ public static class FacebookEndpoints
                 return TypedResults.Ok(tokenDetails.ToDto());
             });
 
-            apiGroup.MapGet("/tokens/{token:string}/details", async (string token, [FromServices] IFacebookService service, CancellationToken ct) =>
+            apiGroup.MapGet("/tokens/{token}/details", async (string token, [FromServices] IFacebookService service, CancellationToken ct) =>
             {
                 var tokenDetails = await service.GetTokenDetailsAsync(token, ct);
                 return TypedResults.Ok(tokenDetails.ToDto());
