@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OpenTelemetry.Metrics;
-using Microsoft.AspNetCore.StaticFiles;
 using FacebookOptions = Admin.Facebook.FacebookOptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,7 +64,12 @@ builder.Services
         {
             var admins = builder.Configuration.Get<AppSettings>()?.FacebookOptions.Administrators ?? [];
             var email = context.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Email);
-            return admins.Contains(email?.Value);
+            var isAdmin = admins.Contains(email?.Value);
+
+            var logger = (context.Resource as HttpContext)?.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("AdminPolicy");
+            logger?.LogInformation("Authorization check for email {Email}: IsAdmin={IsAdmin}", email?.Value ?? "<null>", isAdmin);
+
+            return isAdmin;
         }));
 
 builder.Services
