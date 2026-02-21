@@ -13,7 +13,6 @@
 @using global::Azure.Identity
 
 @rendermode InteractiveServer
-
 @inject IOptions<FacebookOptions> facebookOptions
 @inject IOptions<AzureOptions> azureOptions
 @inject IHttpContextAccessor httpContextAccessor
@@ -51,7 +50,7 @@
     }
 
     private string? UserAccessToken { get; set; }
-    private TokenData? TokenData { get; set; }
+    private TokenDetails? TokenData { get; set; }
 
     [CascadingParameter]
     public required Task<AuthenticationState> AuthenticationStateTask { get; set; }
@@ -111,6 +110,6 @@
 
     private async Task UpdateExpiry()
     {
-        TokenData = (await GetTokenDetailsAsync(UserAccessToken ?? string.Empty)).Data;
+        TokenData = (await GetTokenDetailsAsync(UserAccessToken ?? string.Empty));
     }
 }
