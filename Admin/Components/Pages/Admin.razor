@@ -87,7 +87,7 @@
     
     private async Task<TokenDetails> GetTokenDetailsAsync(string token)
     {
-        var url = $"/tokens/{token}/details";
+        var url = $"api/facebook/tokens/{token}/details";
         var httpClient = httpClientFactory.CreateClient("Api");
         var tokenDetails = await httpClient.GetFromJsonAsync<TokenDetails>(url);
         return tokenDetails!;
