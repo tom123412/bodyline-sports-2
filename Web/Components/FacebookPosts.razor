@@ -54,6 +54,7 @@ else
         catch (HttpRequestException e)
         {
             logger.LogError(e, "{exceptionMessage} getting posts for group {groupId}", e.Message, options.Value.GroupId);
+            throw;
         }
         finally
         {
