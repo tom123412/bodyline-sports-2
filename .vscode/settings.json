@@ -33,6 +33,7 @@
         "xfbml"
     ],
     "chat.tools.terminal.autoApprove": {
-        "dotnet build": true
+        "dotnet build": true,
+        "git checkout": true
     }
 }
