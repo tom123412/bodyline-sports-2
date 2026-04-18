@@ -31,5 +31,8 @@
         "webapps",
         "wwwroot",
         "xfbml"
-    ]
+    ],
+    "chat.tools.terminal.autoApprove": {
+        "dotnet build": true
+    }
 }
