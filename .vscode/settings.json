@@ -34,6 +34,10 @@
     ],
     "chat.tools.terminal.autoApprove": {
         "dotnet build": true,
-        "git checkout": true
+        "git checkout": true,
+        "/^cd /workspaces/bodyline-sports-2 && dotnet restore && dotnet list package --outdated$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
