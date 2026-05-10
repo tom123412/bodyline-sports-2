@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish and Deploy Static Web App Job
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
           lfs: false
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
       - name: Publish Web Project
         working-directory: ./Web
         run: |
@@ -46,13 +46,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish and Deploy Web App Job (Api)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
           lfs: false
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
       - name: Publish API Project
         working-directory: ./Api
         run: |
@@ -67,13 +67,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish and Deploy Web App Job (Admin)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
           lfs: false
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
       - name: Publish Admin Project
         working-directory: ./Admin
         run: |
