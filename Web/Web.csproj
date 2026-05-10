@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.FeatureManagement" />
   </ItemGroup>
 
   <Target Name="Tailwind" BeforeTargets="Build">

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Web;
 using Web.ContactDetails;
 using Web.Facebook;
+using Microsoft.FeatureManagement;
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -32,6 +33,7 @@ builder.Services.AddMsalAuthentication(options =>
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IFeatureManager>(sp => new FeatureManager(new ConfigurationFeatureDefinitionProvider(builder.Configuration.GetSection("FeatureManagement"))));
 
 await builder.Build().RunAsync();
 

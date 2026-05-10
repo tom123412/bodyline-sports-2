@@ -1,9 +1,12 @@
 @using Microsoft.Extensions.Options
 @using Web.Facebook
+@using System.Linq
+@using Microsoft.FeatureManagement
 
 @inject IOptions<FacebookOptions> options
 @inject ILogger<FacebookPosts> logger
 @inject FacebookApiClient facebookApiClient
+@inject IFeatureManager featureManager
 
 @if (IsLoading)
 {
@@ -42,6 +45,7 @@ else
 }
 
 @code {
+    private readonly CancellationTokenSource _tokenSource = new();
     private bool IsLoading { get; set; } = true;
     private IEnumerable<FacebookPost> Posts { get; set; } = [];
 
@@ -49,7 +53,15 @@ else
     {
         try
         {
-            Posts = await facebookApiClient.GetPostsForGroup();
+            if (await featureManager.IsEnabledAsync("UseSSE"))
+            {
+                var postsList = await facebookApiClient.GetPostsForGroupSSE(_tokenSource.Token).ToListAsync();
+                Posts = postsList.Where(p => p is not null).Cast<FacebookPost>();
+            }
+            else
+            {
+                Posts = await facebookApiClient.GetPostsForGroup();
+            }
         }
         catch (HttpRequestException e)
         {

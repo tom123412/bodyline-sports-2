@@ -38,6 +38,7 @@
         "/^cd /workspaces/bodyline-sports-2 && dotnet restore && dotnet list package --outdated$/": {
             "approve": true,
             "matchCommandLine": true
-        }
+        },
+        "dotnet restore": true
     }
 }
