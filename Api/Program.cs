@@ -5,7 +5,6 @@ using Api.BackgroundServices;
 using Api.Facebook;
 using Api.Facebook.Model;
 using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using Azure.Data.AppConfiguration;
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
@@ -21,8 +20,8 @@ using FacebookOptions = Api.Facebook.FacebookOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi();
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddOpenApi();
 
 builder.Services
     .AddOpenTelemetry()
@@ -112,6 +111,7 @@ builder.Services
         options.GroupNameFormat = "'v'V";
         options.SubstituteApiVersionInUrl = true;
     })
+    .AddOpenApi();
     ;
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -199,7 +199,18 @@ app.UseForwardedHeaders();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi().WithDocumentPerVersion();;
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options =>
+    {
+        var descriptions = app.DescribeApiVersions();
+
+        for ( var i = 0; i < descriptions.Count; i++ )
+        {
+            var description = descriptions[i];
+            var isDefault = i == descriptions.Count - 1;
+
+            options.AddDocument( description.GroupName, description.GroupName, isDefault: isDefault );
+        }
+    });
 }
 else
 {
