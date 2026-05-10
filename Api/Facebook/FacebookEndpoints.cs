@@ -10,7 +10,7 @@ public static class FacebookEndpoints
 {
     extension(WebApplication app)
     {
-        public void MapFacebookEndpoints()
+        public WebApplication MapFacebookEndpoints()
         {
             var apiVersionSet = app
                 .NewApiVersionSet()
@@ -59,9 +59,11 @@ public static class FacebookEndpoints
                 var posts = await service.GetPostsForPageAsync(id, ct);
                 return TypedResults.Ok(posts.Select(p => p.ToDto()));
             });
+
+            return app;
         }
 
-        public void MapFacebookEndpoints2()
+        public WebApplication MapFacebookEndpoints2()
         {
             var apiVersionSet = app
                 .NewApiVersionSet()
@@ -79,6 +81,8 @@ public static class FacebookEndpoints
                 var posts = service.GetPostsForGroupAsync2(id, ct);
                 return TypedResults.ServerSentEvents(posts.Select(p => p.ToDto()), "posts");
             });
+
+            return app;
         }
     }
 }

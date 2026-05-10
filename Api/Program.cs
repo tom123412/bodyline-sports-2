@@ -5,6 +5,7 @@ using Api.BackgroundServices;
 using Api.Facebook;
 using Api.Facebook.Model;
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Azure.Data.AppConfiguration;
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
@@ -197,7 +198,7 @@ app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().WithDocumentPerVersion();;
     app.MapScalarApiReference();
 }
 else
@@ -229,7 +230,10 @@ app.UseExceptionHandler(applicationBuilder =>
 });
 
 app.MapHealthChecks("/health");
-app.MapFacebookEndpoints();
+app
+    .MapFacebookEndpoints()
+    .MapFacebookEndpoints2()
+    ;
 app.MapAzureEndpoints();
 
 app.Run();
