@@ -67,7 +67,7 @@ builder.Services
             var isAdmin = admins.Contains(email?.Value);
 
             var logger = (context.Resource as HttpContext)?.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("AdminPolicy");
-            logger?.LogInformation("Authorization check for email {Email}: IsAdmin={IsAdmin}", email?.Value ?? "<null>", isAdmin);
+            logger?.LogInformation("Authorization check completed: IsAdmin={IsAdmin}", isAdmin);
 
             return isAdmin;
         }));
