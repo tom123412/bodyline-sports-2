@@ -5,16 +5,23 @@
 # https://containers.dev/guide/dependabot
 
 version: 2
-multi-ecosystem-groups:
-  everything-group:
-    schedule:
-      interval: "weekly"
 
 updates:
  - package-ecosystem: "devcontainers"
    directory: "/"
-   multi-ecosystem-group: "everything-group"
+   schedule:
+      interval: "weekly"
  
  - package-ecosystem: "nuget"
    directory: "/" 
-   multi-ecosystem-group: "everything-group"
+   schedule:
+      interval: "weekly"
+
+# Define the multi-ecosystem group here
+multi-ecosystem-groups:
+  app-dependencies:
+    patterns:
+      - "*"
+    ecosystems:
+      - "devcontainers"
+      - "nuget"
