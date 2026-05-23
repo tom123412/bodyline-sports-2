@@ -15,7 +15,10 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/"
     multi-ecosystem-group: "infrastructure"
+    patterns: ["*"
+
 
   - package-ecosystem: "devcontainers"
     directory: "/"
     multi-ecosystem-group: "infrastructure"
+    patterns: ["*"
