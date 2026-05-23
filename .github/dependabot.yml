@@ -6,22 +6,16 @@
 
 version: 2
 
-updates:
- - package-ecosystem: "devcontainers"
-   directory: "/"
-   schedule:
-      interval: "weekly"
- 
- - package-ecosystem: "nuget"
-   directory: "/" 
-   schedule:
+multi-ecosystem-groups:
+  infrastructure:
+    schedule:
       interval: "weekly"
 
-# Define the multi-ecosystem group here
-multi-ecosystem-groups:
-  app-dependencies:
-    patterns:
-      - "*"
-    ecosystems:
-      - "devcontainers"
-      - "nuget"
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    multi-ecosystem-group: "infrastructure"
+
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    multi-ecosystem-group: "infrastructure"
