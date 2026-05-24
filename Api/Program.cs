@@ -20,9 +20,6 @@ using FacebookOptions = Api.Facebook.FacebookOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddOpenApi();
-
 builder.Services
     .AddOpenTelemetry()
     .WithMetrics(metrics =>
@@ -196,21 +193,22 @@ app.UseAuthentication();
 
 app.UseForwardedHeaders();
 
+app.MapOpenApi().WithDocumentPerVersion();
+app.MapScalarApiReference(options =>
+{
+    var descriptions = app.DescribeApiVersions();
+
+    for ( var i = 0; i < descriptions.Count; i++ )
+    {
+        var description = descriptions[i];
+        var isDefault = i == descriptions.Count - 1;
+
+        options.AddDocument( description.GroupName, description.GroupName, isDefault: isDefault );
+    }
+});
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi().WithDocumentPerVersion();;
-    app.MapScalarApiReference(options =>
-    {
-        var descriptions = app.DescribeApiVersions();
-
-        for ( var i = 0; i < descriptions.Count; i++ )
-        {
-            var description = descriptions[i];
-            var isDefault = i == descriptions.Count - 1;
-
-            options.AddDocument( description.GroupName, description.GroupName, isDefault: isDefault );
-        }
-    });
 }
 else
 {
