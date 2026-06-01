@@ -12,6 +12,8 @@ public static class FacebookEndpoints
     {
         public WebApplication MapFacebookEndpoints()
         {
+            ActivitySource activitySource10 = new("Api.Facebook.FacebookEndpoints", "1.0");
+
             var apiVersionSet = app
                 .NewApiVersionSet()
                 .HasApiVersion(new ApiVersion(1))
@@ -31,6 +33,7 @@ public static class FacebookEndpoints
 
             apiGroup.MapGet("/groups/{id}/posts", async (string id, [FromServices] IFacebookService service, CancellationToken ct) =>
             {
+                using var _ = activitySource10.StartActivity("/posts");
                 var posts = await service.GetPostsForGroupAsync(id, ct);
                 return TypedResults.Ok(posts.Select(p => p.ToDto()));
             });
