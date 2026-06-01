@@ -29,7 +29,7 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
 
     public async IAsyncEnumerable<FacebookPost?> GetPostsForGroupSSE([EnumeratorCancellation]CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/facebook/groups/{_options.GroupId}/posts?api-version=2.0");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/facebook/groups/{_options.GroupId}/posts?api-version=2");
         request.SetBrowserResponseStreamingEnabled(true);
 
         var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
