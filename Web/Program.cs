@@ -21,12 +21,18 @@ builder.Services.AddHttpClient<FacebookApiClient>(client =>
     client.BaseAddress = new(builder.Configuration.GetValue<string>("ApiUrl") ?? "https://localhost:1234/");
 });
 
-builder.Services.AddAuthorizationCore(options =>
-{
-    options.AddPolicy("Admin", policy => policy.AddRequirements(new AdminRequirement()));
-});
+// builder.Services.AddAuthorizationCore(options =>
+// {
+//     options.AddPolicy("Admin", policy => policy.AddRequirements(new AdminRequirement()));
+// });
 
-builder.Services.AddCascadingAuthenticationState();
+// builder.Services.AddMsalAuthentication(options =>
+// {
+//     builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
+// });
+
+// builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IFeatureManager>(sp => new FeatureManager(new ConfigurationFeatureDefinitionProvider(builder.Configuration.GetSection("FeatureManagement"))));
 
