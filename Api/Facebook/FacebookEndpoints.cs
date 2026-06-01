@@ -1,4 +1,4 @@
-using System;
+using System.Diagnostics;
 using Api.Facebook.Dto;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -80,8 +80,7 @@ public static class FacebookEndpoints
 
             apiGroup.MapGet("/groups/{id}/posts", async (string id, [FromServices] IFacebookService service, CancellationToken ct) =>
             {
-                using (Activity? activity = activitySource20.StartActivity("/posts"))
-
+                using var _ = activitySource20.StartActivity("/posts");
                 var posts = service.GetPostsForGroupAsync2(id, ct);
                 return TypedResults.ServerSentEvents(posts.Select(p => p.ToDto()), "posts");
             });
