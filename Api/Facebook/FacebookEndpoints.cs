@@ -12,7 +12,7 @@ public static class FacebookEndpoints
     {
         public WebApplication MapFacebookEndpoints()
         {
-            ActivitySource activitySource10 = new("Api.Facebook.FacebookEndpoints", "1.0");
+            ActivitySource activitySource10 = new(typeof(FacebookEndpoints).FullName!, "1.0");
 
             var apiVersionSet = app
                 .NewApiVersionSet()
@@ -33,7 +33,7 @@ public static class FacebookEndpoints
 
             apiGroup.MapGet("/groups/{id}/posts", async (string id, [FromServices] IFacebookService service, CancellationToken ct) =>
             {
-                using var _ = activitySource10.StartActivity("/posts");
+                using var _ = activitySource10.StartActivity("/posts-v1");
                 var posts = await service.GetPostsForGroupAsync(id, ct);
                 return TypedResults.Ok(posts.Select(p => p.ToDto()));
             });
@@ -68,7 +68,7 @@ public static class FacebookEndpoints
 
         public WebApplication MapFacebookEndpoints2()
         {
-            ActivitySource activitySource20 = new("Api.Facebook.FacebookEndpoints", "2.0");
+            ActivitySource activitySource20 = new(typeof(FacebookEndpoints).FullName!, "2.0");
 
             var apiVersionSet = app
                 .NewApiVersionSet()
@@ -83,7 +83,7 @@ public static class FacebookEndpoints
 
             apiGroup.MapGet("/groups/{id}/posts", async (string id, [FromServices] IFacebookService service, CancellationToken ct) =>
             {
-                using var _ = activitySource20.StartActivity("/posts");
+                using var _ = activitySource20.StartActivity("/posts-v2");
                 var posts = service.GetPostsForGroupAsync2(id, ct);
                 return TypedResults.ServerSentEvents(posts.Select(p => p.ToDto()), "posts");
             });

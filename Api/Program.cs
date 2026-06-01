@@ -29,7 +29,7 @@ builder.Services
             .AddHttpClientInstrumentation()
             ;
     })
-    .WithTracing(tracing => tracing.AddSource("Api.Facebook.FacebookEndpoints"))
+    .WithTracing(tracing => tracing.AddSource(typeof(FacebookEndpoints).FullName!))
     .UseAzureMonitor();
 
 builder.Services.AddHealthChecks();
