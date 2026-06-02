@@ -23,10 +23,10 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
         var posts = await httpClient.GetFromJsonAsync<IEnumerable<FacebookPost>>(
             $"/api/facebook/groups/{_options.GroupId}/posts", cancellationToken);
 
-        return posts ?? Array.Empty<FacebookPost>();
+        return posts ?? [];
     }
 
-    public async IAsyncEnumerable<FacebookPost?> GetPostsForGroupSSE([EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<FacebookPost> GetPostsForGroupSSE([EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/facebook/groups/{_options.GroupId}/posts?api-version=2");
         request.SetBrowserResponseStreamingEnabled(true);
@@ -45,6 +45,7 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
 
         await foreach (var post in parser.EnumerateAsync(cancellationToken))
         {
+            if (post.Data is null) yield break;
             yield return post.Data;
         }
     }

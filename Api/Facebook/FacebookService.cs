@@ -149,7 +149,7 @@ public class FacebookService: IFacebookService
             var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
             var post = (feed?.Data ?? []).SingleOrDefault(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
             
-            if (post is null) break;
+            if (post is null) yield break;
 
             yield return post;
             latestPostDate = post.UpdatedDateTime;

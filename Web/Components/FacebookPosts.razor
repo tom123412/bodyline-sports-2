@@ -55,19 +55,15 @@ else
         {
             if (await featureManager.IsEnabledAsync("UseSSE"))
             {
-                logger.LogInformation("using server sent events feature");
-                //var postsList = await facebookApiClient.GetPostsForGroupSSE(_tokenSource.Token).ToListAsync();
-                //Posts = postsList.Where(p => p is not null).Cast<FacebookPost>();
- 
                 await foreach (var post in facebookApiClient.GetPostsForGroupSSE(_tokenSource.Token))
                 {
-                    if (post is not null) Posts.Add(post);
+                    logger.LogInformation("received post {post}", post);
+                    Posts.Add(post);
                     StateHasChanged(); 
                 }
             }
             else
             {
-                logger.LogInformation("using traditional api call");
                 Posts = (await facebookApiClient.GetPostsForGroup()).ToList();
             }
         }
