@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using System.Net.ServerSentEvents;
@@ -9,7 +8,7 @@ using System.Text.Json;
 
 namespace Web.Facebook;
 
-public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> options)
+public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> options, ILogger<FacebookApiClient> logger)
 {
     private readonly FacebookOptions _options = options.Value;
 
@@ -27,18 +26,21 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
         return posts ?? Array.Empty<FacebookPost>();
     }
 
-    public async IAsyncEnumerable<FacebookPost?> GetPostsForGroupSSE([EnumeratorCancellation]CancellationToken cancellationToken)
+    public async IAsyncEnumerable<FacebookPost?> GetPostsForGroupSSE([EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/facebook/groups/{_options.GroupId}/posts?api-version=2");
         request.SetBrowserResponseStreamingEnabled(true);
 
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
 
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         var parser = SseParser.Create(stream, (type, data) =>
         {
             var json = Encoding.UTF8.GetString(data);
-            return JsonSerializer.Deserialize<FacebookPost>(json);
+            var post = JsonSerializer.Deserialize<FacebookPost>(json, options);
+            return post;
         });
 
         await foreach (var post in parser.EnumerateAsync(cancellationToken))
