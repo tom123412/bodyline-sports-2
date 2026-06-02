@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Web.Facebook;
 
-public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> options, ILogger<FacebookApiClient> logger)
+public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> options)
 {
     private readonly FacebookOptions _options = options.Value;
 
