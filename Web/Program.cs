@@ -34,7 +34,8 @@ builder.Services.AddHttpClient<FacebookApiClient>(client =>
 // builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddMemoryCache();
-builder.Services.AddSingleton<IFeatureManager>(sp => new FeatureManager(new ConfigurationFeatureDefinitionProvider(builder.Configuration.GetSection("FeatureManagement"))));
+//builder.Services.AddSingleton<IFeatureManager>(sp => new FeatureManager(new ConfigurationFeatureDefinitionProvider(builder.Configuration.GetSection("FeatureManagement"))));
+builder.Services.AddFeatureManagement();
 
 await builder.Build().RunAsync();
 
