@@ -40,13 +40,17 @@ public class FacebookService: IFacebookService
     private static readonly SemaphoreSlim GroupLock = new(1, 1);
     private static readonly SemaphoreSlim PostsLock = new(1, 1);
     private readonly HttpClient _httpClient;
+    private readonly ILogger<FacebookService> _logger;
     private readonly FacebookOptions _options;
     private readonly IMemoryCache _cache;
     private readonly MemoryCacheEntryOptions _cacheOptions;
 
-    public FacebookService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<FacebookOptions> options, IMemoryCache cache)
+    public FacebookService(IHttpClientFactory httpClientFactory, 
+        IOptionsSnapshot<FacebookOptions> options, ILogger<FacebookService> logger,
+        IMemoryCache cache)
     {
         _httpClient = httpClientFactory.CreateClient("Facebook");
+        _logger = logger;
         _options = options.Value;
         _cache = cache;
         _cacheOptions = new MemoryCacheEntryOptions
@@ -159,6 +163,8 @@ public class FacebookService: IFacebookService
                 var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
                 var post = (feed?.Data ?? []).SingleOrDefault(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
                 
+                _logger.LogInformation("read post {post}", post);
+
                 if (post is null || (post.Id == latestCachedPost?.Id)) yield break;
 
                 cachedPosts.Insert(0, post);
@@ -170,6 +176,7 @@ public class FacebookService: IFacebookService
 
             foreach (var post in cachedPosts)
             {
+                _logger.LogInformation("send cached post {post}", post);
                 yield return post;
             }
         }
