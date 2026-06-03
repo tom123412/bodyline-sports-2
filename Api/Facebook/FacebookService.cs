@@ -146,12 +146,14 @@ public class FacebookService: IFacebookService
         {
             await PostsLock.WaitAsync(ct);
             var cacheKey = $"Posts-{groupId}";
-            var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
-            var latestCachedPost = posts.OrderByDescending(p => p.UpdatedDateTime).FirstOrDefault();
+            var cachedPosts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
+            var latestCachedPost = cachedPosts.OrderByDescending(p => p.UpdatedDateTime).FirstOrDefault();
 
             var latestCachedPostDate = latestCachedPost?.UpdatedDateTime ?? DateTimeOffset.UtcNow.AddYears(-1);
             DateTimeOffset? latestPostDate = null;
-            for (int i = 0; i < _options.PostsToLoad && !ct.IsCancellationRequested; i++)
+            
+            var i = 0;
+            for (; i < _options.PostsToLoad && !ct.IsCancellationRequested; i++)
             {
                 var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&until={latestPostDate?.ToString("s")}&limit=1";
                 var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
@@ -159,11 +161,16 @@ public class FacebookService: IFacebookService
                 
                 if (post is null || (post.Id == latestCachedPost?.Id)) yield break;
 
-                posts.Insert(0, post);
-                _cache.Set(cacheKey, posts.ToArray(), _cacheOptions);
+                cachedPosts.Insert(0, post);
+                _cache.Set(cacheKey, cachedPosts.ToArray(), _cacheOptions);
 
                 yield return post;
-                latestPostDate = post.UpdatedDateTime;
+                latestPostDate = post.UpdatedDateTime.AddSeconds(-1);
+            }
+
+            foreach (var post in cachedPosts)
+            {
+                yield return post;
             }
         }
         finally
