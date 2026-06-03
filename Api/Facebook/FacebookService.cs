@@ -165,7 +165,7 @@ public class FacebookService: IFacebookService
                 
                 _logger.LogInformation("read post {post}", post);
 
-                if (post is null || (post.Id == latestCachedPost?.Id)) yield break;
+                if (post is null || (post.Id == latestCachedPost?.Id)) break;
 
                 cachedPosts.Insert(0, post);
                 _cache.Set(cacheKey, cachedPosts.ToArray(), _cacheOptions);
