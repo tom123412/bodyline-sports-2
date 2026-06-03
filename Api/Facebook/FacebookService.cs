@@ -93,7 +93,7 @@ public class FacebookService: IFacebookService
     {
         try
         {
-            await PostsLock.WaitAsync();
+            await PostsLock.WaitAsync(ct);
             var cacheKey = $"Posts-{groupId}";
             var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
             var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
@@ -142,17 +142,33 @@ public class FacebookService: IFacebookService
 
     async IAsyncEnumerable<FacebookPost> IFacebookService.GetPostsForGroupAsync2(string groupId, [EnumeratorCancellation] CancellationToken ct)
     {
-        var latestPostDate = DateTimeOffset.UtcNow;
-        for (int i = 0; i < _options.PostsToLoad && !ct.IsCancellationRequested; i++)
+        try
         {
-            var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={latestPostDate.AddYears(-1).ToString("s")}&until={latestPostDate.AddSeconds(-1).ToString("s")}&limit=1";
-            var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
-            var post = (feed?.Data ?? []).SingleOrDefault(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
-            
-            if (post is null) yield break;
+            await PostsLock.WaitAsync(ct);
+            var cacheKey = $"Posts-{groupId}";
+            var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
+            var latestCachedPost = posts.OrderByDescending(p => p.UpdatedDateTime).FirstOrDefault();
 
-            yield return post;
-            latestPostDate = post.UpdatedDateTime;
+            var latestCachedPostDate = latestCachedPost?.UpdatedDateTime ?? DateTimeOffset.UtcNow.AddYears(-1);
+            DateTimeOffset? latestPostDate = null;
+            for (int i = 0; i < _options.PostsToLoad && !ct.IsCancellationRequested; i++)
+            {
+                var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&until={latestPostDate?.ToString("s")}&limit=1";
+                var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
+                var post = (feed?.Data ?? []).SingleOrDefault(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
+                
+                if (post is null || (post.Id == latestCachedPost?.Id)) yield break;
+
+                posts.Insert(0, post);
+                _cache.Set(cacheKey, posts.ToArray(), _cacheOptions);
+
+                yield return post;
+                latestPostDate = post.UpdatedDateTime;
+            }
+        }
+        finally
+        {
+            PostsLock.Release();
         }
     }
 
