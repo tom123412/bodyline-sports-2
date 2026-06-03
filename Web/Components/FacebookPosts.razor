@@ -59,7 +59,7 @@ else
                 {
                     logger.LogInformation("received post {post}", post);
                     Posts.Add(post);
-                    StateHasChanged(); 
+                    await InvokeAsync(StateHasChanged);
                 }
             }
             else
