@@ -156,6 +156,7 @@ public class FacebookService: IFacebookService
             var latestCachedPostDate = latestCachedPost?.UpdatedDateTime ?? DateTimeOffset.UtcNow.AddYears(-1);
             DateTimeOffset? latestPostDate = null;
             
+            List<FacebookPost> newPosts = [];
             var i = 0;
             for (; i < _options.PostsToLoad && !ct.IsCancellationRequested; i++)
             {
@@ -167,7 +168,7 @@ public class FacebookService: IFacebookService
 
                 if (post is null || (post.Id == latestCachedPost?.Id)) break;
 
-                cachedPosts.Insert(0, post);
+                newPosts.Add(post);
                 _cache.Set(cacheKey, cachedPosts.ToArray(), _cacheOptions);
 
                 yield return post;
@@ -179,6 +180,8 @@ public class FacebookService: IFacebookService
                 _logger.LogInformation("send cached post {post}", post);
                 yield return post;
             }
+
+            cachedPosts.InsertRange(0, newPosts);
         }
         finally
         {
