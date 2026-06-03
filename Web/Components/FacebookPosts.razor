@@ -59,7 +59,8 @@ else
                 {
                     logger.LogInformation("received post {post}", post);
                     Posts.Add(post);
-                    await InvokeAsync(StateHasChanged);
+                    StateHasChanged();
+                    await Task.Yield();
                 }
             }
             else
