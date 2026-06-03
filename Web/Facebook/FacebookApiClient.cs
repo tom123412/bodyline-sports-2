@@ -45,7 +45,7 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
 
         await foreach (var post in parser.EnumerateAsync(cancellationToken))
         {
-            if (post.Data is null) yield break;
+            if (post.Data is null) break;
             yield return post.Data;
         }
     }

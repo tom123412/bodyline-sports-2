@@ -60,7 +60,8 @@ else
                     logger.LogInformation("received post {post}", post);
                     Posts.Add(post);
                     StateHasChanged();
-                    await Task.Delay(10);
+                    await InvokeAsync(StateHasChanged);
+                    await Task.Delay(1000);
                 }
             }
             else
