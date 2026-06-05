@@ -164,8 +164,6 @@ public class FacebookService: IFacebookService
                 var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
                 var post = (feed?.Data ?? []).SingleOrDefault(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
                 
-                _logger.LogInformation("read post {post}", post);
-
                 if (post is null || (post.Id == latestCachedPost?.Id)) break;
 
                 newPosts.Add(post);
@@ -177,7 +175,6 @@ public class FacebookService: IFacebookService
 
             foreach (var post in cachedPosts)
             {
-                _logger.LogInformation("send cached post {post}", post);
                 yield return post;
             }
 

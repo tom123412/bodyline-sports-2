@@ -59,9 +59,12 @@ else
                 {
                     logger.LogInformation("received post {post}", post);
                     Posts.Add(post);
-                    StateHasChanged();
-                    await InvokeAsync(StateHasChanged);
-                    await Task.Delay(1000);
+
+                    if (Posts.Count == 5) break;
+                    
+                    //StateHasChanged();
+                    //await InvokeAsync(StateHasChanged);
+                    //await Task.Delay(1000);
                 }
             }
             else
