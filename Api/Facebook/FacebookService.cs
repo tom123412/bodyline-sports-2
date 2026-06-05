@@ -160,17 +160,18 @@ public class FacebookService: IFacebookService
             var i = 0;
             for (; i < _options.PostsToLoad && !ct.IsCancellationRequested; i++)
             {
-                var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&until={latestPostDate?.ToString("s")}&limit=1";
+                var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&until={latestPostDate?.ToString("s")}&limit=2";
                 var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
-                var post = (feed?.Data ?? []).SingleOrDefault(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
+                var sortedFeed = (feed?.Data ?? []).OrderByDescending(p => p.UpdatedDateTime).Where(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
+                var latestPost = sortedFeed.FirstOrDefault();
                 
-                if (post is null || (post.Id == latestCachedPost?.Id)) break;
+                if (latestPost is null || (latestPost.Id == latestCachedPost?.Id)) break;
 
-                newPosts.Add(post);
-                _cache.Set(cacheKey, cachedPosts.ToArray(), _cacheOptions);
+                newPosts.AddRange(sortedFeed);
 
-                yield return post;
-                latestPostDate = post.UpdatedDateTime.AddSeconds(-1);
+                foreach (var post in sortedFeed) yield return post;
+                
+                latestPostDate = latestPost.UpdatedDateTime.AddSeconds(-1);
             }
 
             foreach (var post in cachedPosts)
@@ -179,6 +180,7 @@ public class FacebookService: IFacebookService
             }
 
             cachedPosts.InsertRange(0, newPosts);
+            _cache.Set(cacheKey, cachedPosts.ToArray(), _cacheOptions);
         }
         finally
         {
