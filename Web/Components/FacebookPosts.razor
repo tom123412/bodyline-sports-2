@@ -65,7 +65,7 @@ else
                     if (Posts.Count == 5) break;
 
                     StateHasChanged();
-                    //await InvokeAsync(StateHasChanged);
+                    await InvokeAsync(StateHasChanged);
                     //await Task.Delay(1000);
                 }
             }
