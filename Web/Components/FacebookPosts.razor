@@ -62,8 +62,9 @@ else
                     IsLoading = false;
                     
                     StateHasChanged();
-                    //await InvokeAsync(StateHasChanged);
                     await Task.Yield();
+
+                    break;
                 }
             }
             else
