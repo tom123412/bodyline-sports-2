@@ -162,16 +162,16 @@ public class FacebookService: IFacebookService
             {
                 var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&until={latestPostDate?.ToString("s")}&limit=2";
                 var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
-                var sortedFeed = (feed?.Data ?? []).OrderByDescending(p => p.UpdatedDateTime).Where(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any());
-                var latestPost = sortedFeed.FirstOrDefault();
+                var sortedFeed = (feed?.Data ?? []).OrderByDescending(p => p.UpdatedDateTime).Where(p => !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name)));
+                var oldestPost = sortedFeed.LastOrDefault();
                 
-                if (latestPost is null || (latestPost.Id == latestCachedPost?.Id)) break;
+                if (oldestPost is null || cachedPosts.Any(p => p.Id == oldestPost.Id)) break;
 
                 newPosts.AddRange(sortedFeed);
 
                 foreach (var post in sortedFeed) yield return post;
                 
-                latestPostDate = latestPost.UpdatedDateTime.AddSeconds(-1);
+                latestPostDate = oldestPost.UpdatedDateTime.AddSeconds(-1);
             }
 
             foreach (var post in cachedPosts)
