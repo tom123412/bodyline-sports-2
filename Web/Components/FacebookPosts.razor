@@ -55,20 +55,18 @@ else
         {
             if (await featureManager.IsEnabledAsync("UseSSE"))
             {
-                logger.LogInformation("start of operation {datetime}", DateTimeOffset.UtcNow);
+                logger.LogInformation("starting reading posts at {datetime}", DateTimeOffset.UtcNow);
                 await foreach (var post in facebookApiClient.GetPostsForGroupSSE(_tokenSource.Token))
                 {
-                    Posts.Add(post);
+                    logger.LogInformation("received post {id} at {datetime}", post.Id, DateTimeOffset.UtcNow);
                     
+                    Posts.Add(post);
+                   
                     IsLoading = false;
                     
                     StateHasChanged();
                     await Task.Yield();
                 }
-                
-                logger.LogInformation("sse event posts received {datetime}", DateTimeOffset.UtcNow);
-                await facebookApiClient.GetPostsForGroup();
-                logger.LogInformation("posts received {datetime}", DateTimeOffset.UtcNow);            
             }
             else
             {
