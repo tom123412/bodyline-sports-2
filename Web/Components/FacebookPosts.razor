@@ -64,8 +64,6 @@ else
                     
                     StateHasChanged();
                     await Task.Yield();
-
-                    break;
                 }
                 
                 logger.LogInformation("sse event posts received {datetime}", DateTimeOffset.UtcNow);
