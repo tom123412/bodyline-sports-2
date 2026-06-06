@@ -66,6 +66,8 @@ else
                     
                     StateHasChanged();
                     await Task.Yield();
+
+                    await Task.Delay(5000);
                 }
             }
             else
