@@ -177,6 +177,8 @@ public class FacebookService: IFacebookService
             foreach (var post in cachedPosts)
             {
                 yield return post;
+
+                await Task.Delay(5000);
             }
 
             cachedPosts.InsertRange(0, newPosts);
