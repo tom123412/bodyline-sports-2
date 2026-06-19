@@ -128,7 +128,7 @@ public class FacebookService: IFacebookService
 
     async Task<FacebookTokenDetails> IFacebookService.GetLongLivedTokenDetailsAsync(string userAccessToken, CancellationToken ct)
     {
-        var url = $"/debug_token?input_token={_options.AccessToken}&access_token={userAccessToken}";
+        var url = $"/debug_token?input_token={_options.GroupAccessToken}&access_token={userAccessToken}";
         var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookTokenDetails>(url, ct);
         return tokenDetails!;
     }
@@ -192,7 +192,7 @@ public class FacebookService: IFacebookService
 
     async Task<FacebookTokenDetails> IFacebookService.GetTokenDetailsAsync(string token, CancellationToken ct)
     {
-        var url = $"/debug_token?input_token={token}&access_token={_options.AccessToken}";
+        var url = $"/debug_token?input_token={token}&access_token={_options.GroupAccessToken}";
         var tokenDetails = await _httpClient.GetFromJsonAsync<FacebookTokenDetails>(url, ct);
         return tokenDetails!;
     }

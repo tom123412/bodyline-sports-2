@@ -14,7 +14,7 @@ public class FacebookAuthorisationHeaderHandler(IOptionsSnapshot<FacebookOptions
         var isOAuthUri = request.RequestUri?.AbsolutePath.Contains("access_token") ?? false;
         if (!(hasAuthorizationHeader || isOAuthUri))
         {
-            var accessToken = _options.AccessToken;
+            var accessToken = _options.GroupAccessToken;
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", $"{accessToken}");
         }
  

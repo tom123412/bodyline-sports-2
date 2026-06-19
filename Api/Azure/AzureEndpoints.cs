@@ -28,7 +28,7 @@ public static class AzureEndpoints
                 var userAccessToken = authFeatures?.AuthenticateResult!.Properties!.GetTokenValue("access_token");
 
                 service.SaveConfigurationSettingsAsync(
-                    $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}",
+                    $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.GroupAccessToken)}",
                     userAccessToken!
                 );
                 return Task.FromResult(TypedResults.NoContent());
