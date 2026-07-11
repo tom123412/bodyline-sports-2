@@ -40,6 +40,10 @@
             "approve": true,
             "matchCommandLine": true
         },
-        "dotnet restore": true
+        "dotnet restore": true,
+        "/^dotnet list Api/Api\\.csproj package --include-transitive \\| grep -i \"Microsoft\\.OpenApi\" \\|\\| true$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
