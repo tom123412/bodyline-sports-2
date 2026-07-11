@@ -39,9 +39,9 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 
     options.ConfigureRefresh(configure =>
     {
-        const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+        const string GroupAccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.GroupAccessToken)}";
         configure
-            .Register($"{AccessTokenKey}", refreshAll: true)
+            .Register($"{GroupAccessTokenKey}", refreshAll: true)
             .SetRefreshInterval(TimeSpan.FromSeconds(1))
             ;
     });

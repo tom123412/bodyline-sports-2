@@ -94,7 +94,7 @@
     
     private async Task SaveToken()
     {
-        const string AccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.AccessToken)}";
+        const string GroupAccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.GroupAccessToken)}";
  
         ConfigurationClient client;
         if (string.IsNullOrWhiteSpace(azureOptions.Value.AppConfigurationConnectionString))
@@ -105,7 +105,7 @@
         {
             client = new ConfigurationClient(azureOptions.Value.AppConfigurationConnectionString);
         }
-        await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, UserAccessToken));
+        await client.SetConfigurationSettingAsync(new ConfigurationSetting(GroupAccessTokenKey, UserAccessToken));
     }
 
     private async Task UpdateExpiry()

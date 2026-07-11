@@ -40,12 +40,12 @@
 
   protected async override Task OnInitializedAsync()
   {
-    const string AccessTokenKey = $"{nameof(FacebookOptions)}:AccessToken";
+    const string GroupAccessTokenKey = $"{nameof(FacebookOptions)}:GroupAccessToken";
 
     @* ExpiresAt = (await facebook.GetTokenDetails(LongLivedAccessToken, UserAccessToken!)).Data.ExpiresAt;
 
 var client = new ConfigurationClient(azureOptions.Value.AppConfigurationEndpoint, new DefaultAzureCredential());
-await client.SetConfigurationSettingAsync(new ConfigurationSetting(AccessTokenKey, LongLivedAccessToken)); *@
+await client.SetConfigurationSettingAsync(new ConfigurationSetting(Group  AccessTokenKey, LongLivedAccessToken)); *@
 
     await base.OnInitializedAsync();
   }
