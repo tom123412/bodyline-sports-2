@@ -44,6 +44,11 @@
         "/^dotnet list Api/Api\\.csproj package --include-transitive \\| grep -i \"Microsoft\\.OpenApi\" \\|\\| true$/": {
             "approve": true,
             "matchCommandLine": true
-        }
+        },
+        "dotnet list": true,
+        "dotnet nuget": true,
+        "strings": true,
+        "unzip": true,
+        "dotnet add": true
     }
 }
