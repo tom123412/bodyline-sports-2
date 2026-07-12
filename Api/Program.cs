@@ -44,7 +44,8 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 
     if (string.IsNullOrWhiteSpace(connectionString))
     {
-        options.Connect(new Uri(builder.Configuration[$"{nameof(AzureOptions)}:{nameof(AzureOptions.AppConfigurationEndpoint)}"]!), new DefaultAzureCredential());
+        var endpoint = builder.Configuration[$"{nameof(AzureOptions)}:{nameof(AzureOptions.AppConfigurationEndpoint)}"];
+        options.Connect(new Uri(endpoint!), new DefaultAzureCredential());
     }
     else
     {
@@ -54,9 +55,9 @@ builder.Configuration.AddAzureAppConfiguration(options =>
     options
         .ConfigureRefresh(configure =>
         {
-            const string GroupAccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.GroupAccessToken)}";
+            const string PageAccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.PageAccessToken)}";
             configure
-                .Register($"{GroupAccessTokenKey}", refreshAll: true)
+                .Register($"{PageAccessTokenKey}", refreshAll: true)
                 .SetRefreshInterval(TimeSpan.FromSeconds(1))
                 ;
         })
