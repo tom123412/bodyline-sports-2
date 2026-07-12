@@ -3,6 +3,7 @@ using Api.Facebook.Dto;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Api.Facebook;
 
@@ -57,9 +58,9 @@ public static class FacebookEndpoints
                 return TypedResults.Ok(tokenDetails.ToDto());
             });
 
-            apiGroup.MapGet("/pages/{id}/posts", async (string id, [FromServices] IFacebookService service, CancellationToken ct) =>
+            apiGroup.MapGet("/pages/{id}/posts", async (string id, [FromServices] IFacebookService service, IOptionsMonitor<FacebookOptions> options, CancellationToken ct) =>
             {
-                var posts = await service.GetPostsForPageAsync(id, ct);
+                var posts = await service.GetPostsForPageAsync(id, options.CurrentValue.PageAccessToken, ct);
                 return TypedResults.Ok(posts.Select(p => p.ToDto()));
             });
 

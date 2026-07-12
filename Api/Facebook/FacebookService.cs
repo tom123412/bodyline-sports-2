@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using Api.Facebook.Model;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,7 +12,7 @@ public interface IFacebookService
     public Task<FacebookGroup?> GetGroupAsync(string groupId, CancellationToken ct);
     public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId, CancellationToken ct);
     public IAsyncEnumerable<FacebookPost> GetPostsForGroupAsync2(string groupId, CancellationToken ct);
-    public Task<IEnumerable<FacebookPost>> GetPostsForPageAsync(string groupId, CancellationToken ct);
+    public Task<IEnumerable<FacebookPost>> GetPostsForPageAsync(string pageId, string accessToken, CancellationToken ct);
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken, CancellationToken ct);
     public Task<FacebookTokenDetails> GetTokenDetailsAsync(string token, CancellationToken ct);
     public Task<string> RefreshAccessTokenAsync(string accessToken, CancellationToken ct);
@@ -30,7 +31,7 @@ public class FacebookService: IFacebookService
         public required FacebookErrorResponse Error { get; set; }
     }
 
-    private class FacebookGroupFeed
+    private class FacebookFeed
     {
         public required FacebookPost[] Data { get; set; }
     }
@@ -101,7 +102,7 @@ public class FacebookService: IFacebookService
             var cacheKey = $"Posts-{groupId}";
             var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
             var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
-            var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
+            var feed = await _httpClient.GetFromJsonAsync<FacebookFeed>(url, ct);
             var newPosts = (feed?.Data ?? []).Where(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any()).ToList();
 
             newPosts.AddRange(posts.Where(p => p.Type != "Status"));
@@ -116,12 +117,19 @@ public class FacebookService: IFacebookService
         }
     }
 
-    async Task<IEnumerable<FacebookPost>> IFacebookService.GetPostsForPageAsync(string pageId, CancellationToken ct)
+    async Task<IEnumerable<FacebookPost>> IFacebookService.GetPostsForPageAsync(string pageId, string accessToken, CancellationToken ct)
     {
         var oneMonthAgo = DateTimeOffset.UtcNow.AddMonths(-1);
         var url = $"/{pageId}/feed?fields=attachments,message,message_tags,updated_time&since={oneMonthAgo.ToString("s")}";
-        var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
-        var newPosts = (feed?.Data ?? []).Where(p => !p.Tags.Where(t => _options.TagsToHide.Contains(t.Name)).Any()).ToList();
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        using var response = await _httpClient.SendAsync(request, ct);
+
+        response.EnsureSuccessStatusCode();
+        var feed = await response.Content.ReadFromJsonAsync<FacebookFeed>(ct);
+        var newPosts = (feed?.Data ?? []).Where(p => !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name))).ToList();
 
         return newPosts;
     }
@@ -161,7 +169,7 @@ public class FacebookService: IFacebookService
             for (; i < _options.PostsToLoad && !ct.IsCancellationRequested; i++)
             {
                 var url = $"/{groupId}/feed?fields=attachments,message,message_tags,updated_time&until={latestPostDate?.ToString("s")}&limit=2";
-                var feed = await _httpClient.GetFromJsonAsync<FacebookGroupFeed>(url, ct);
+                var feed = await _httpClient.GetFromJsonAsync<FacebookFeed>(url, ct);
                 var sortedFeed = (feed?.Data ?? []).OrderByDescending(p => p.UpdatedDateTime).Where(p => !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name)));
                 var oldestPost = sortedFeed.LastOrDefault();
                 
