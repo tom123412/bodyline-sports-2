@@ -4,9 +4,9 @@ using Microsoft.Net.Http.Headers;
 
 namespace Api.Facebook;
 
-public class FacebookAuthorisationHeaderHandler(IOptionsSnapshot<FacebookOptions> options) : DelegatingHandler
+public class FacebookAuthorisationHeaderHandler(IOptionsMonitor <FacebookOptions> options) : DelegatingHandler
 {
-    private readonly FacebookOptions _options = options.Value;
+    private readonly FacebookOptions _options = options.CurrentValue;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
