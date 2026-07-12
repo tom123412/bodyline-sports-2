@@ -2,6 +2,7 @@ namespace Api.Facebook;
 
 public sealed class FacebookOptions
 {
+    public string? AccessToken { get; set; }
     public required string GroupAccessToken { get; set; }
     public required string AppId { get; set; }
     public required string AppSecret { get; set; }

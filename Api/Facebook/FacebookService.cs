@@ -63,7 +63,7 @@ public class FacebookService: IFacebookService
     {
         try
         {
-            await GroupLock.WaitAsync();
+            await GroupLock.WaitAsync(ct);
             var url = $"{groupId}?fields=description,cover";
 
             try
