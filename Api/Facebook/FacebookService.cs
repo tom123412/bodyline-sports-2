@@ -193,17 +193,17 @@ public class FacebookService: IFacebookService
                 foreach (var post in sortedFeed) yield return post;
                 
                 latestPostDate = oldestPost.UpdatedDateTime.AddSeconds(-1);
-            }
+
+                await Task.Delay(5000);
+             }
 
             foreach (var post in cachedPosts)
             {
                 yield return post;
-
-                await Task.Delay(5000);
-            }
+           }
 
             cachedPosts.InsertRange(0, newPosts);
-            _cache.Set(cacheKey, cachedPosts.ToArray(), _cacheOptions);
+            //_cache.Set(cacheKey, cachedPosts.ToArray(), _cacheOptions);
         }
         finally
         {
