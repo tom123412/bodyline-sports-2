@@ -137,9 +137,10 @@ public class FacebookService: IFacebookService
 
             newPosts.AddRange(posts.Where(p => p.Type != "Status"));
 
-            _cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
+            //_cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
 
-            return _cache.Get<IEnumerable<FacebookPost>>(cacheKey)!;
+            //return _cache.Get<IEnumerable<FacebookPost>>(cacheKey)!;
+            return newPosts;
         }
         finally
         {
@@ -194,7 +195,7 @@ public class FacebookService: IFacebookService
                 
                 latestPostDate = oldestPost.UpdatedDateTime.AddSeconds(-1);
 
-                await Task.Delay(5000);
+                await Task.Delay(5000, ct);
              }
 
             foreach (var post in cachedPosts)
