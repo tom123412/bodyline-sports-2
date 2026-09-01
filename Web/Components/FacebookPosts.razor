@@ -70,7 +70,8 @@ else
             }
             else
             {
-                Posts = (await facebookApiClient.GetPostsForGroup()).ToList();
+                //Posts = (await facebookApiClient.GetPostsForGroup()).ToList();
+                Posts = (await facebookApiClient.GetPostsForPage()).ToList();
             }
         }
         catch (HttpRequestException e)
