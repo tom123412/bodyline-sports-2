@@ -101,16 +101,17 @@ builder.Services.AddScoped(sp =>
 builder.Services
     .AddApiVersioning(options =>
     {
-        options.DefaultApiVersion = new ApiVersion(1);
+        //options.DefaultApiVersion = new ApiVersion(1);
         options.ReportApiVersions = true;
         options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ApiVersionReader = new QueryStringApiVersionReader();
     })
     .AddApiExplorer(options =>
     {
         options.GroupNameFormat = "'v'V";
         options.SubstituteApiVersionInUrl = true;
     })
-    .AddOpenApi();
+    .AddOpenApi()
     ;
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
