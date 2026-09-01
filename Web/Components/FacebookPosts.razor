@@ -70,8 +70,9 @@ else
             }
             else
             {
-                //Posts = (await facebookApiClient.GetPostsForGroup()).ToList();
                 Posts = (await facebookApiClient.GetPostsForPage()).ToList();
+                Posts.Concat(await facebookApiClient.GetPostsForGroup()).ToList();
+                Posts = Posts.OrderByDescending(p => p.UpdatedDateTime).ToList();
             }
         }
         catch (HttpRequestException e)
