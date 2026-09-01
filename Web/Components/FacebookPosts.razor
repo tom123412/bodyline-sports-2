@@ -72,13 +72,21 @@ else
             {
                 Posts = (await facebookApiClient.GetPostsForPage()).ToList();
                 StateHasChanged();
-                Posts.Concat(await facebookApiClient.GetPostsForGroup()).ToList();
-                Posts = Posts.OrderByDescending(p => p.UpdatedDateTime).ToList();
+
+                try
+                {
+                    Posts = Posts.Concat(await facebookApiClient.GetPostsForGroup()).ToList();
+                    Posts = Posts.OrderByDescending(p => p.UpdatedDateTime).ToList();
+                }
+                catch (HttpRequestException e)
+                {
+                    logger.LogError(e, "{exceptionMessage} getting posts for group {groupId}", e.Message, options.Value.GroupId);
+                }
             }
         }
         catch (HttpRequestException e)
         {
-            logger.LogError(e, "{exceptionMessage} getting posts for group {groupId}", e.Message, options.Value.GroupId);
+            logger.LogError(e, "{exceptionMessage} getting posts for page {pageId}", e.Message, options.Value.PageId);
             throw;
         }
         finally
