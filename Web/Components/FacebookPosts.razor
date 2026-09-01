@@ -71,6 +71,7 @@ else
             else
             {
                 Posts = (await facebookApiClient.GetPostsForPage()).ToList();
+                StateHasChanged();
                 Posts.Concat(await facebookApiClient.GetPostsForGroup()).ToList();
                 Posts = Posts.OrderByDescending(p => p.UpdatedDateTime).ToList();
             }

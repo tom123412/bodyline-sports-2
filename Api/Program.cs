@@ -60,6 +60,12 @@ builder.Configuration.AddAzureAppConfiguration(options =>
                 .Register($"{PageAccessTokenKey}", refreshAll: true)
                 .SetRefreshInterval(TimeSpan.FromSeconds(1))
                 ;
+
+            const string GroupAccessTokenKey = $"{nameof(FacebookOptions)}:{nameof(FacebookOptions.GroupAccessToken)}";
+            configure
+                .Register($"{GroupAccessTokenKey}", refreshAll: true)
+                .SetRefreshInterval(TimeSpan.FromSeconds(1))
+                ;
         })
         ;
 });
@@ -101,7 +107,6 @@ builder.Services.AddScoped(sp =>
 builder.Services
     .AddApiVersioning(options =>
     {
-        //options.DefaultApiVersion = new ApiVersion(1);
         options.ReportApiVersions = true;
         options.AssumeDefaultVersionWhenUnspecified = true;
         options.ApiVersionReader = new QueryStringApiVersionReader();
