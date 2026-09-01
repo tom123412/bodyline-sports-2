@@ -85,7 +85,7 @@ public static class FacebookEndpoints
             apiGroup.MapGet("/groups/{id}/posts", async (string id, [FromServices] IFacebookService service, CancellationToken ct) =>
             {
                 using var _ = activitySource20.StartActivity("/posts-v2");
-                var posts = service.GetPostsForGroupAsync2(id, ct);
+                var posts = service.GetPostsForGroupAsyncSSE(id, ct);
                 return TypedResults.ServerSentEvents(posts.Select(p => p.ToDto()), "posts");
             });
 

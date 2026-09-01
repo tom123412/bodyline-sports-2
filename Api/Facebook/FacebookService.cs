@@ -11,7 +11,7 @@ public interface IFacebookService
 {
     public Task<FacebookGroup?> GetGroupAsync(string groupId, CancellationToken ct);
     public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId, CancellationToken ct);
-    public IAsyncEnumerable<FacebookPost> GetPostsForGroupAsync2(string groupId, CancellationToken ct);
+    public IAsyncEnumerable<FacebookPost> GetPostsForGroupAsyncSSE(string groupId, CancellationToken ct);
     public Task<IEnumerable<FacebookPost>> GetPostsForPageAsync(string pageId, string accessToken, CancellationToken ct);
     public Task<FacebookTokenDetails> GetLongLivedTokenDetailsAsync(string userAccessToken, CancellationToken ct);
     public Task<FacebookTokenDetails> GetTokenDetailsAsync(string token, CancellationToken ct);
@@ -119,19 +119,32 @@ public class FacebookService: IFacebookService
 
     async Task<IEnumerable<FacebookPost>> IFacebookService.GetPostsForPageAsync(string pageId, string accessToken, CancellationToken ct)
     {
-        var oneMonthAgo = DateTimeOffset.UtcNow.AddMonths(-1);
-        var url = $"/{pageId}/feed?fields=attachments,message,message_tags,updated_time&since={oneMonthAgo.ToString("s")}";
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
-        
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        try
+        {
+            await PostsLock.WaitAsync(ct);
+            var cacheKey = $"Posts-{pageId}";
+            var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
+            var url = $"/{pageId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        using var response = await _httpClient.SendAsync(request, ct);
+            using var response = await _httpClient.SendAsync(request, ct);
 
-        response.EnsureSuccessStatusCode();
-        var feed = await response.Content.ReadFromJsonAsync<FacebookFeed>(ct);
-        var newPosts = (feed?.Data ?? []).Where(p => !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name))).ToList();
+            response.EnsureSuccessStatusCode();
+            var feed = await response.Content.ReadFromJsonAsync<FacebookFeed>(ct);
+            var newPosts = (feed?.Data ?? []).Where(p => !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name))).ToList();
 
-        return newPosts;
+            newPosts.AddRange(posts.Where(p => p.Type != "Status"));
+
+            _cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
+
+            return _cache.Get<IEnumerable<FacebookPost>>(cacheKey)!;
+        }
+        finally
+        {
+            PostsLock.Release();
+        }
     }
 
     async Task<FacebookTokenDetails> IFacebookService.GetLongLivedTokenDetailsAsync(string userAccessToken, CancellationToken ct)
@@ -152,7 +165,7 @@ public class FacebookService: IFacebookService
         return tokenDetails!.AccessToken;
     }
 
-    async IAsyncEnumerable<FacebookPost> IFacebookService.GetPostsForGroupAsync2(string groupId, [EnumeratorCancellation] CancellationToken ct)
+    async IAsyncEnumerable<FacebookPost> IFacebookService.GetPostsForGroupAsyncSSE(string groupId, [EnumeratorCancellation] CancellationToken ct)
     {
         try
         {
