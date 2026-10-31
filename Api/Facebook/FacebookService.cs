@@ -10,6 +10,7 @@ namespace Api.Facebook;
 public interface IFacebookService
 {
     public Task<FacebookGroup?> GetGroupAsync(string groupId, CancellationToken ct);
+    public Task<FacebookPage?> GetPageAsync(string pageId, string accessToken, CancellationToken ct);
     public Task<IEnumerable<FacebookPost>> GetPostsForGroupAsync(string groupId, CancellationToken ct);
     public IAsyncEnumerable<FacebookPost> GetPostsForGroupAsyncSSE(string groupId, CancellationToken ct);
     public Task<IEnumerable<FacebookPost>> GetPostsForPageAsync(string pageId, string accessToken, CancellationToken ct);
@@ -78,6 +79,52 @@ public class FacebookService: IFacebookService
                 }
 
                 return group;
+            }
+            catch (HttpRequestException hre) when (hre.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var response = await _httpClient.GetAsync(url);
+                var error = await response.Content.ReadFromJsonAsync<FacebookResponse>(ct);
+                if (error!.Error.Code == 100) return null;
+
+                throw;
+            }
+        }
+        finally
+        {
+            GroupLock.Release();
+        }
+    }
+
+    async Task<FacebookPage?> IFacebookService.GetPageAsync(string pageId, string accessToken, CancellationToken ct)
+    {
+
+        Func<string, Task<FacebookPage?>> getPageWithAccessTokenAsync = async url =>
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            using var response = await _httpClient.SendAsync(request, ct);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<FacebookPage>(ct);
+        };
+        
+        try
+        {
+            await GroupLock.WaitAsync(ct);
+            var url = $"{pageId}?fields=cover,about,contact_address,emails,phone,single_line_address";
+
+            try
+            {
+                var cacheKey = $"Page-{pageId}";
+                var page = _cache.Get<FacebookPage>(cacheKey) ?? await getPageWithAccessTokenAsync(url);
+
+                if (page is not null)
+                {
+                    _cache.Set(cacheKey, page, _cacheOptions);
+                }
+
+                return page;
             }
             catch (HttpRequestException hre) when (hre.StatusCode == HttpStatusCode.BadRequest)
             {
