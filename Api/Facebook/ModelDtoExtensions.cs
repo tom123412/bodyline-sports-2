@@ -21,6 +21,14 @@ public static class ModelDtoExtensions
         }
     }
 
+    extension(FacebookPage model)
+    {
+        public FacebookPageDto ToDto()
+        {
+            return new FacebookPageDto(model.Id, model.About, new FacebookPhotoDto(model.Cover.Source), model.Emails, model.Phone, model.Address);
+        }
+    }
+
     extension(FacebookPost model)
     {
         public FacebookPostDto ToDto()

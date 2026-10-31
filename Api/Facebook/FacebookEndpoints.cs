@@ -32,6 +32,12 @@ public static class FacebookEndpoints
                 return group is null ? TypedResults.NotFound() : TypedResults.Ok(group.ToDto());
             });
 
+            apiGroup.MapGet("/pages/{id}", async Task<Results<Ok<FacebookPageDto>, NotFound>> (string id, [FromServices] IFacebookService service, IOptionsMonitor<FacebookOptions> options, CancellationToken ct) =>
+            {
+                var page = await service.GetPageAsync(id, options.CurrentValue.PageAccessToken, ct);
+                return page is null ? TypedResults.NotFound() : TypedResults.Ok(page.ToDto());
+            });
+
             apiGroup.MapGet("/groups/{id}/posts", async (string id, [FromServices] IFacebookService service, CancellationToken ct) =>
             {
                 using var _ = activitySource10.StartActivity("/posts-v1");
