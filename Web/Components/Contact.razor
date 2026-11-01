@@ -58,7 +58,8 @@
     {
          try
         {
-            Page = null; //await facebookApiClient.GetPage();
+            Page = await facebookApiClient.GetPage();
+            logger.LogInformation("Successfully retrieved page details, {page}", Page);
         }
         catch (HttpRequestException e)
         {
