@@ -6,21 +6,21 @@
 @inject IOptions<FacebookOptions> options
 
 <div class="p-2 text-center [grid-area:about] flex flex-col items-center">
-    <p class="pt-2">@(Group?.Description ?? options.Value.DefaultAboutMessage)</p>
+    <p class="pt-2">@(Page?.About ?? options.Value.DefaultAboutMessage)</p>
 </div>
 
 @code {
-    private FacebookGroup? Group {get; set;}
+    private FacebookPage? Page {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Group = await facebookApiClient.GetGroup();
+            Page = await facebookApiClient.GetPage();
         }
         catch (HttpRequestException e)
         {
-            logger.LogError(e, "{exceptionMessage} getting group details for {groupId}", e.Message, options.Value.GroupId);
+            logger.LogError(e, "{exceptionMessage} getting page details for {pageId}", e.Message, options.Value.PageId);
         }
     }
 }    

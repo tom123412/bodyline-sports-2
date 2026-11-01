@@ -18,6 +18,12 @@ public class FacebookApiClient(HttpClient httpClient, IOptions<FacebookOptions> 
         return group;
     }
 
+    public async Task<FacebookPage?> GetPage(CancellationToken cancellationToken = default)
+    {
+        var page = await httpClient.GetFromJsonAsync<FacebookPage>($"/api/facebook/pages/{_options.PageId}", cancellationToken);
+        return page;
+    }
+
     public async Task<IEnumerable<FacebookPost>> GetPostsForGroup(CancellationToken cancellationToken = default)
     {
         var posts = await httpClient.GetFromJsonAsync<IEnumerable<FacebookPost>>(

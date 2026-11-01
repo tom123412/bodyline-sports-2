@@ -6,21 +6,21 @@
 @inject IOptions<FacebookOptions> options
 
 <div class="[grid-area:image]">
-    <img fetchpriority="high" class="h-full" alt="logo image" src="@(Group?.Cover.Source ?? options.Value.DefaultLogoUrl)">
+    <img fetchpriority="high" class="h-full" alt="logo image" src="@(Page?.Cover.Source ?? options.Value.DefaultLogoUrl)">
 </div>    
 
 @code {
-    private FacebookGroup? Group {get; set;}
+    private FacebookPage? Page {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Group = await facebookApiClient.GetGroup();
+            Page = await facebookApiClient.GetPage();
         }
         catch (HttpRequestException e)
         {
-            logger.LogError(e, "{exceptionMessage} getting group details for {groupId}", e.Message, options.Value.GroupId);
+            logger.LogError(e, "{exceptionMessage} getting page details for {pageId}", e.Message, options.Value.PageId);
         }
     }
 }
