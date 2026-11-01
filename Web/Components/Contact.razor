@@ -56,10 +56,23 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _model = new()
+        {
+            Email = contactOptions.Value.Email,
+            EmailLink = contactOptions.Value.EmailLink,
+            LandLine = contactOptions.Value.LandLine,
+            LandLineLink = contactOptions.Value.LandLineLink,
+            Address = contactOptions.Value.Address,
+            AddressLink = contactOptions.Value.AddressLink,
+            Mobile = contactOptions.Value.Mobile,
+            MobileLink = contactOptions.Value.MobileLink,
+            FacebookPageName = contactOptions.Value.FacebookPageName,
+            FacebookPageLink = contactOptions.Value.FacebookPageLink,
+        };
+ 
          try
         {
             Page = await facebookApiClient.GetPage();
-            logger.LogInformation("Successfully retrieved page details, {page}", Page);
         }
         catch (HttpRequestException e)
         {
