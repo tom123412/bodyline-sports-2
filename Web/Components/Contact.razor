@@ -1,7 +1,11 @@
 @using Microsoft.Extensions.Options
 @using Web.ContactDetails
+@using Web.Facebook
 
-@inject IOptionsSnapshot<ContactOptions> options
+@inject ILogger<About> logger
+@inject FacebookApiClient facebookApiClient
+@inject IOptionsSnapshot<ContactOptions> contactOptions
+@inject IOptionsSnapshot<FacebookOptions> facebookOptions
 
 <div class="p-2 flex lg:flex-col gap-1 justify-center flex-wrap [grid-area:contact]">
     <p class="flex gap-x-2 w-full lg:w-fit justify-center items-center">
@@ -47,21 +51,35 @@
     }
 
     private Details? _model;
+    
+    private FacebookPage? Page {get; set;}
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+         try
+        {
+            Page = await facebookApiClient.GetPage();
+        }
+        catch (HttpRequestException e)
+        {
+            logger.LogError(e, "{exceptionMessage} getting page details for {pageId}", e.Message, facebookOptions.Value.PageId);
+        }
+
+        var email = Page?.Emails.FirstOrDefault();
+        var mobile  = Page?.Phone;
+
         _model = new()
-            {
-                Email = options.Value.Email,
-                EmailLink = options.Value.EmailLink,
-                LandLine = options.Value.LandLine,
-                LandLineLink = options.Value.LandLineLink,
-                Address = options.Value.Address,
-                AddressLink = options.Value.AddressLink,
-                Mobile = options.Value.Mobile,
-                MobileLink = options.Value.MobileLink,
-                FacebookPageName = options.Value.FacebookPageName,
-                FacebookPageLink = options.Value.FacebookPageLink,
-            };
+        {
+            Email = email ?? contactOptions.Value.Email,
+            EmailLink = (email is null) ? contactOptions.Value.EmailLink : new Uri($"mailto:{email}"),
+            LandLine = contactOptions.Value.LandLine,
+            LandLineLink = contactOptions.Value.LandLineLink,
+            Address = Page?.Address ?? contactOptions.Value.Address,
+            AddressLink = contactOptions.Value.AddressLink,
+            Mobile = mobile ?? contactOptions.Value.Mobile,
+            MobileLink = (mobile is null) ? contactOptions.Value.MobileLink : new Uri($"tel:{mobile}"),
+            FacebookPageName = contactOptions.Value.FacebookPageName,
+            FacebookPageLink = contactOptions.Value.FacebookPageLink,
+        };
     }
 }
