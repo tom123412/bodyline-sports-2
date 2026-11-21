@@ -171,7 +171,7 @@ public class FacebookService: IFacebookService
             await PostsLock.WaitAsync(ct);
             var cacheKey = $"Posts-{pageId}";
             var posts = _cache.Get<FacebookPost[]>(cacheKey)?.ToList() ?? [];
-            var url = $"/{pageId}/feed?fields=attachments,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
+            var url = $"/{pageId}/feed?fields=attachments,story,message,message_tags,updated_time&since={posts.FirstOrDefault()?.UpdatedDateTime.ToString("s")}&limit={ _options.PostsToLoad}";
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
             
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -182,7 +182,7 @@ public class FacebookService: IFacebookService
             var feed = await response.Content.ReadFromJsonAsync<FacebookFeed>(ct);
             var newPosts = (feed?.Data ?? []).Where(p => !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name))).ToList();
 
-            newPosts.AddRange(posts.Where(p => p.Type != "Status"));
+            newPosts.AddRange(posts.Where(p => p.Type != "Status" && p.Story is null));
 
             _cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
 

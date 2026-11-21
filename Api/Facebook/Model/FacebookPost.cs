@@ -6,6 +6,7 @@ namespace Api.Facebook.Model;
 public class FacebookPost
 {
     public string? Message { get; set; }
+    public string? Story { get; set; }
     public required string Id { get; set; } 
     public FacebookAttachments? Attachments { get; set; } 
     
