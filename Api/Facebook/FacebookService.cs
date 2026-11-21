@@ -180,9 +180,9 @@ public class FacebookService: IFacebookService
 
             response.EnsureSuccessStatusCode();
             var feed = await response.Content.ReadFromJsonAsync<FacebookFeed>(ct);
-            var newPosts = (feed?.Data ?? []).Where(p => !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name))).ToList();
+            var newPosts = (feed?.Data ?? []).Where(p => (p.Story is null) && !p.Tags.Any(t => _options.TagsToHide.Contains(t.Name))).ToList();
 
-            newPosts.AddRange(posts.Where(p => p.Type != "Status" && p.Story is null));
+            newPosts.AddRange(posts.Where(p => p.Type != "Status"));
 
             _cache.Set(cacheKey, newPosts.ToArray(), _cacheOptions);
 
